@@ -9,6 +9,7 @@ import {
   parseRawClippingData,
 } from "./utils";
 import axios from "axios";
+import { config } from "./environment";
 
 export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -110,7 +111,7 @@ export const App: React.FC = () => {
             const payload = formattedData.filter((_, idx) => selected[idx]);
             console.log("hii payload", payload);
             await axios.post(
-              "",
+              `${config.serviceUrl}/databases/${config.notionDatabaseId}`,
               { payload },
               {
                 headers: {

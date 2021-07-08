@@ -8,6 +8,7 @@
     "@rebass/preset": "4.0.5",
     "axios": "^0.21.1",
     "emotion-theming": "10.0.27",
+    "env-var": "^7.0.1",
     "framer-motion": "4.1.17",
     "react": "17.0.2",
     "react-dom": "17.0.2",
