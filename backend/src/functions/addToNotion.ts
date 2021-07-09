@@ -1,7 +1,10 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { notion } from "../api/notion";
-import { ValidatedAPIGatewayProxyEvent } from "../libs/apiGateway";
+import {
+  makeResultResponse,
+  ValidatedAPIGatewayProxyEvent,
+} from "../libs/apiGateway";
 
 export interface IClippingsPayload {
   title: string;
@@ -17,11 +20,13 @@ const controller = async (
   const { databaseId } = event.pathParameters;
   const { payload } = event.body;
 
+  if (!payload) {
+    throw new Error("Missing payload");
+  }
+
   if (!payload.length) {
     console.log("Nothing to append, returning early");
-    return {
-      statusCode: 200,
-    };
+    makeResultResponse({ success: true });
   }
 
   console.log("Retrieving pages");
@@ -51,9 +56,7 @@ const controller = async (
     await notion.addClippingsToPage({ pageId, payload: item.clippings });
   }
 
-  return {
-    statusCode: 200,
-  };
+  return makeResultResponse({ success: true });
 };
 
 export const handler = middy(controller).use(jsonBodyParser());

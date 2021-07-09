@@ -88,6 +88,7 @@ export const App: React.FC = () => {
                 color: selected[idx] ? "white" : "black",
                 border: selected[idx] ? "2px solid black" : "2px solid black",
                 borderRadius: 5,
+                cursor: "pointer",
               }}
               flexDirection={"row"}
               justifyContent={"space-between"}
@@ -112,14 +113,7 @@ export const App: React.FC = () => {
             console.log("hii payload", payload);
             await axios.post(
               `${config.serviceUrl}/databases/${config.notionDatabaseId}`,
-              { payload },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  "Access-Control-Allow-Origin": "*",
-                  "Access-Control-Allow-Credentials": true,
-                },
-              }
+              { payload }
             );
           }}
         >
