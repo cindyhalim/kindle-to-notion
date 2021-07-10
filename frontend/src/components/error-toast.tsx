@@ -27,7 +27,7 @@ export const ErrorToast: React.FC<IErrorToastProps> = ({ isVisible }) => {
             sx={{
               minHeight: "50px",
               width: "100%",
-              marginY: 20,
+              marginBottom: 30,
               padding: 10,
               borderLeft: "5px solid #fc4747",
               bg: "#ffe3e3",

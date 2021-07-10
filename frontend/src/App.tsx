@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, ButtonProps, Flex, Text } from "rebass";
+import { Box, Button, Flex, Text } from "rebass";
 import { BaseLayout } from "./layout/base-layout";
 import { theme } from "./layout/theme";
 import { IFormattedClipping } from "./utils";
@@ -7,14 +7,13 @@ import axios from "axios";
 import { config } from "./environment";
 import { DragAndDropZone } from "./components/drag-and-drop-zone";
 import { ListCard } from "./components/list-card";
-import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import { ErrorToast } from "./components/error-toast";
 import Lottie from "react-lottie";
 import animationData from "./assets/loading.json";
 
 export const App: React.FC = () => {
   const [selected, setSelected] = useState<{ [key: number]: boolean }>({});
-  const [isCancelled, setIsCancelled] = useState<boolean>(false);
+  const [isReset, setIsReset] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -43,22 +42,22 @@ export const App: React.FC = () => {
   return (
     <BaseLayout>
       <Flex flexDirection={"column"}>
-        <Text sx={{ ...theme.title }}>kindle to notion</Text>
+        <Text sx={{ ...theme.title, marginBottom: 20 }}>kindle to notion</Text>
         <ErrorToast isVisible={hasError} />
         <DragAndDropZone
-          reset={isCancelled}
+          reset={isReset}
           onError={() => {
             setHasError(true);
           }}
           defaultAction={(data) => {
-            setIsCancelled(false);
+            setIsReset(false);
             getSelected(data);
           }}
         >
           {({ loading, data }) => {
             if (data.length && !loading) {
               return (
-                <Box sx={{ marginTop: 20, width: "100%" }}>
+                <Box sx={{ width: "100%" }}>
                   {data.map((item, idx) => (
                     <ListCard
                       key={idx}
@@ -91,13 +90,14 @@ export const App: React.FC = () => {
                           const payload = data.filter(
                             (_, idx) => selected[idx]
                           );
-
-                          console.log("hii payload", payload);
                           const response = await axios.post(
                             `${config.serviceUrl}/databases/${config.notionDatabaseId}`,
                             { payload }
                           );
-                          console.log("hii response", response);
+                          if (response?.data?.success) {
+                            setIsLoading(false);
+                            setIsReset(true);
+                          }
                         } catch (e) {
                           setIsLoading(false);
                           setHasError(true);
@@ -129,7 +129,7 @@ export const App: React.FC = () => {
                       )}
                     </Button>
                     <Button
-                      onClick={() => setIsCancelled(true)}
+                      onClick={() => setIsReset(true)}
                       sx={{
                         marginTop: [10, 10, 0],
                         width: ["100%", "100%", "48%"],

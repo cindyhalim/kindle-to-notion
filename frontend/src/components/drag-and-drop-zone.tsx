@@ -104,19 +104,19 @@ export const DragAndDropZone: React.FC<IProps> = ({
         width: "100%",
         border: data.length ? undefined : "5px dotted black",
         borderRadius: "8px",
+        display: noUploadInitiated ? "flex" : "block",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         ...(isDragging && onDragSx),
       }}
     >
       {noUploadInitiated ? (
-        <Flex
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-        >
+        <>
           <Text>1. Connect your Kindle via USB</Text>
           <Text>2. Open Kindle/documents </Text>
           <Text>3. Drag and drop MyClippings.txt here</Text>
-        </Flex>
+        </>
       ) : (
         children({
           loading: isLoading,
