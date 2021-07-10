@@ -91,10 +91,13 @@ export const App: React.FC = () => {
                           const payload = data.filter(
                             (_, idx) => selected[idx]
                           );
-                          await axios.post(
+
+                          console.log("hii payload", payload);
+                          const response = await axios.post(
                             `${config.serviceUrl}/databases/${config.notionDatabaseId}`,
                             { payload }
                           );
+                          console.log("hii response", response);
                         } catch (e) {
                           setIsLoading(false);
                           setHasError(true);
