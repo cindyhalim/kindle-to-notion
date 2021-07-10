@@ -1,124 +1,151 @@
-import React, { useState, useMemo } from "react";
-import { Box, Button, Flex, Text } from "rebass";
-import { Input } from "@rebass/forms";
+import React, { useEffect, useState } from "react";
+import { Box, Button, ButtonProps, Flex, Text } from "rebass";
 import { BaseLayout } from "./layout/base-layout";
 import { theme } from "./layout/theme";
-import {
-  formatParsedClippings,
-  IFormattedClipping,
-  parseRawClippingData,
-} from "./utils";
+import { IFormattedClipping } from "./utils";
 import axios from "axios";
 import { config } from "./environment";
+import { DragAndDropZone } from "./components/drag-and-drop-zone";
+import { ListCard } from "./components/list-card";
+import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
+import { ErrorToast } from "./components/error-toast";
+import Lottie from "react-lottie";
+import animationData from "./assets/loading.json";
 
 export const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [formattedData, setFormattedData] = useState<IFormattedClipping[]>([]);
   const [selected, setSelected] = useState<{ [key: number]: boolean }>({});
+  const [isCancelled, setIsCancelled] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useMemo(() => {
-    if (formattedData) {
+  const noneSelected = Object.values(selected).every((item) => {
+    return !item;
+  });
+
+  const getSelected = (data: IFormattedClipping[]) => {
+    if (data) {
       let selectedData = {};
-      formattedData.forEach((_, idx) => {
+      data.forEach((_, idx) => {
         selectedData = { ...selectedData, [idx]: true };
       });
 
       setSelected(selectedData);
     }
-  }, [formattedData]);
-
-  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsLoading(true);
-    event.preventDefault();
-    const input = event.target;
-
-    if (!input || !input.files) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.readAsText(input.files[0]);
-    reader.onload = () => {
-      const result = reader.result;
-
-      if (result) {
-        const parsedClippingData = parseRawClippingData(result);
-        const formattedParsedData = formatParsedClippings(parsedClippingData);
-
-        setFormattedData(formattedParsedData);
-      }
-    };
   };
+
+  useEffect(() => {
+    if (hasError) {
+      const timeOut = setTimeout(() => setHasError(false), 3000);
+      return () => clearTimeout(timeOut);
+    }
+  }, [hasError]);
 
   return (
     <BaseLayout>
       <Flex flexDirection={"column"}>
         <Text sx={{ ...theme.title }}>kindle to notion</Text>
-        <Text>
-          drag and drop your <i>My Clippings.txt</i> file
-        </Text>
-        <Input
-          type="file"
-          accept="text/plain"
-          disabled={isLoading}
-          sx={{
-            borderRadius: "5px",
-            marginTop: 10,
-            padding: 15,
-            ...theme.text,
+        <ErrorToast isVisible={hasError} />
+        <DragAndDropZone
+          reset={isCancelled}
+          onError={() => {
+            setHasError(true);
           }}
-          onError={(e) => console.log("hii error", e)}
-          multiple={false}
-          onChange={handleUpload}
-        />
-        <Box sx={{ marginTop: 20 }}>
-          {formattedData.map((item, idx) => (
-            <Flex
-              key={idx}
-              onClick={() => {
-                setSelected({
-                  ...selected,
-                  [idx]: !selected[idx],
-                });
-              }}
-              sx={{
-                padding: 10,
-                marginBottom: 10,
-                backgroundColor: selected[idx] ? "black" : "white",
-                color: selected[idx] ? "white" : "black",
-                border: selected[idx] ? "2px solid black" : "2px solid black",
-                borderRadius: 5,
-                cursor: "pointer",
-              }}
-              flexDirection={"row"}
-              justifyContent={"space-between"}
-            >
-              <Flex flexDirection="column">
-                <Text>{item.title}</Text>
-                <Text sx={{ fontSize: 10 }}>{item.author}</Text>
-              </Flex>
-              <Text>{item.clippings.length}</Text>
-            </Flex>
-          ))}
-        </Box>
-        <Button
-          sx={{
-            marginTop: 20,
-            backgroundColor: "black",
-            cursor: "pointer",
-            ...theme.text,
-          }}
-          onClick={async () => {
-            const payload = formattedData.filter((_, idx) => selected[idx]);
-            console.log("hii payload", payload);
-            await axios.post(
-              `${config.serviceUrl}/databases/${config.notionDatabaseId}`,
-              { payload }
-            );
+          defaultAction={(data) => {
+            setIsCancelled(false);
+            getSelected(data);
           }}
         >
-          {`Add to Notion`}
-        </Button>
+          {({ loading, data }) => {
+            if (data.length && !loading) {
+              return (
+                <Box sx={{ marginTop: 20, width: "100%" }}>
+                  {data.map((item, idx) => (
+                    <ListCard
+                      key={idx}
+                      title={item.title}
+                      subtitle={item.author}
+                      total={item.clippings.length}
+                      isSelected={selected[idx]}
+                      onSelect={() =>
+                        setSelected({
+                          ...selected,
+                          [idx]: !selected[idx],
+                        })
+                      }
+                    />
+                  ))}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: ["column", "column", "row"],
+                      justifyContent: "space-between",
+                      marginTop: 20,
+                    }}
+                  >
+                    <Button
+                      disabled={noneSelected || isLoading}
+                      onClick={async () => {
+                        setHasError(false);
+                        setIsLoading(true);
+                        try {
+                          const payload = data.filter(
+                            (_, idx) => selected[idx]
+                          );
+                          await axios.post(
+                            `${config.serviceUrl}/databases/${config.notionDatabaseId}`,
+                            { payload }
+                          );
+                        } catch (e) {
+                          setIsLoading(false);
+                          setHasError(true);
+                        }
+                      }}
+                      sx={{
+                        width: ["100%", "100%", "50%"],
+                        backgroundColor: "black",
+                        cursor: "pointer",
+                        ...theme.text,
+                        "&:disabled": {
+                          cursor: "not-allowed",
+                          opacity: 0.4,
+                        },
+                      }}
+                    >
+                      {isLoading ? (
+                        <Lottie
+                          width={50}
+                          height={25}
+                          options={{
+                            autoplay: true,
+                            loop: true,
+                            animationData: animationData,
+                          }}
+                        />
+                      ) : (
+                        "Add to Notion"
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => setIsCancelled(true)}
+                      sx={{
+                        marginTop: [10, 10, 0],
+                        width: ["100%", "100%", "48%"],
+                        border: "3px solid black",
+                        bg: "white",
+                        color: "black",
+                        cursor: "pointer",
+                        ...theme.text,
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Box>
+              );
+            }
+            return undefined;
+          }}
+        </DragAndDropZone>
       </Flex>
     </BaseLayout>
   );
