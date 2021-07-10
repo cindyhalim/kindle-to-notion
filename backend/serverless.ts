@@ -23,7 +23,7 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NOTION_TOKEN: "${ssm:/kindle-to-notion/notion-token}",
-      CLIENT_URL: "https://master.djab0vgbepgeq.amplifyapp.com/",
+      CLIENT_URL: "https://master.djab0vgbepgeq.amplifyapp.com",
     },
     lambdaHashingVersion: "20201221",
   },
