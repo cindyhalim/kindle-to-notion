@@ -1,7 +1,8 @@
-import type { AWS } from "@serverless/typescript";
+import { bookInfoStateMachine } from "src/resources/step-functions";
+import { Serverless } from "src/types/serverless";
 import { handlerFunctions } from "./src/functions";
 
-const serverlessConfiguration: AWS = {
+const serverlessConfiguration: Serverless = {
   service: "kindle-to-notion",
   frameworkVersion: "2",
   custom: {
@@ -10,7 +11,11 @@ const serverlessConfiguration: AWS = {
       includeModules: true,
     },
   },
-  plugins: ["serverless-webpack"],
+  plugins: [
+    "serverless-webpack",
+    "serverless-step-functions",
+    "serverless-iam-roles-per-function",
+  ],
   provider: {
     name: "aws",
     runtime: "nodejs14.x",
@@ -28,6 +33,19 @@ const serverlessConfiguration: AWS = {
     lambdaHashingVersion: "20201221",
   },
   functions: { ...handlerFunctions },
+  stepFunctions: {
+    stateMachines: { ...bookInfoStateMachine },
+  },
+  resources: {
+    Outputs: {
+      BookInfoStateMachine: {
+        Description: "The ARN of the state machine",
+        Value: {
+          Ref: "BookInfoStateMachine",
+        },
+      },
+    },
+  },
 };
 
 module.exports = serverlessConfiguration;
