@@ -1,6 +1,6 @@
-import { AWS } from "@serverless/typescript";
+import type { Serverless } from "src/types/serverless";
 
-export const handlerFunctions: AWS["functions"] = {
+export const handlerFunctions: Serverless["functions"] = {
   check: {
     handler: "src/functions/check.handler",
     events: [
@@ -30,13 +30,23 @@ export const handlerFunctions: AWS["functions"] = {
       },
     ],
   },
-  addToNotion: {
-    handler: "src/functions/addToNotion.handler",
+  addBookInfo: {
+    handler: "src/functions/addBookInfo.handler",
+    iamRoleStatements: [
+      {
+        Effect: "Allow",
+        Action: ["states:startExecution"],
+        Resource: [{ Ref: "BookInfoStateMachine" }],
+      },
+    ],
+    environment: {
+      STATE_MACHINE_ARN: "${self:resources.Outputs.BookInfoStateMachine.Value}",
+    },
     events: [
       {
         http: {
           method: "post",
-          path: `/databases/{databaseId}`,
+          path: `/databases/{databaseId}/books`,
           request: {
             parameters: {
               paths: {
@@ -48,4 +58,31 @@ export const handlerFunctions: AWS["functions"] = {
       },
     ],
   },
+  onGetBookDetails: {
+    handler: "src/functions/onGetBookDetails.handler",
+  },
+  onGetBookLink: {
+    handler: "src/functions/onGetBookLink.handler",
+  },
+  onUpdateReadingList: {
+    handler: "src/functions/onUpdateReadingList.handler",
+  },
+  // addToNotion: {
+  //   handler: "src/functions/addToNotion.handler",
+  //   events: [
+  //     {
+  //       http: {
+  //         method: "post",
+  //         path: `/databases/{databaseId}`,
+  //         request: {
+  //           parameters: {
+  //             paths: {
+  //               databaseId: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ],
+  // },
 };
