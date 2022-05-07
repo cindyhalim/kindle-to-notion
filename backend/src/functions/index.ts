@@ -12,6 +12,24 @@ export const handlerFunctions: AWS["functions"] = {
       },
     ],
   },
+  getBooksWithMissingInfo: {
+    handler: "src/functions/getBooksWithMissingInfo.handler",
+    events: [
+      {
+        http: {
+          method: "get",
+          path: `/databases/{databaseId}/books`,
+          request: {
+            parameters: {
+              paths: {
+                databaseId: true,
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
   addToNotion: {
     handler: "src/functions/addToNotion.handler",
     events: [

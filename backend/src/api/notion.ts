@@ -1,20 +1,70 @@
 import { Client } from "@notionhq/client";
-import { PagesCreateParameters } from "@notionhq/client/build/src/api-endpoints";
-import {
-  BulletedListItemBlock,
-  RichTextPropertyValue,
-  RichTextTextInput,
-  TitlePropertyValue,
-} from "@notionhq/client/build/src/api-types";
+import {} from "@notionhq/client/build/src/api-endpoints";
+
 import { config } from "../environment";
+import { RawDatabaseQueryResponse } from "./types";
 
 const client = new Client({ auth: config.notionToken });
+
+export const getBooksWithMissingFields = async (params: {
+  databaseId: string;
+}) => {
+  const { databaseId } = params;
+  try {
+    const response = await client.databases.query({
+      database_id: databaseId,
+      filter: {
+        or: [
+          {
+            property: "has epub link",
+            checkbox: {
+              equals: false,
+            },
+          },
+          {
+            property: "has details",
+            checkbox: {
+              equals: false,
+            },
+          },
+        ],
+      },
+    });
+
+    const pages = response?.results as RawDatabaseQueryResponse["results"];
+
+    console.log("Query successful, formatting data");
+
+    const booksWithMissingFields = pages.map((page) => ({
+      id: page.id,
+      title: page?.properties?.title?.title?.[0]?.plain_text ?? "",
+      author: page?.properties?.author?.rich_text?.[0]?.plain_text ?? "",
+      missingLink: !page?.properties?.["has epub link"]?.formula?.boolean,
+      missingDetails: !page?.properties?.["has details"]?.formula?.boolean,
+    }));
+
+    const formattedBooksWithMissingFields = booksWithMissingFields.reduce(
+      (prev, curr) => {
+        if (curr.title && curr.author) {
+          return [...prev, curr];
+        }
+        return prev;
+      },
+      []
+    );
+
+    return formattedBooksWithMissingFields;
+  } catch (e) {
+    console.log("Error retrieving books with missing fields", e);
+  }
+};
 
 const getPages = async (params: { databaseId: string }) => {
   const { databaseId } = params;
   try {
     const response = await client.databases.query({ database_id: databaseId });
-    const pages = response?.results;
+    const pages = response?.results as RawDatabaseQueryResponse["results"];
+
     if (!pages) {
       console.log("No pages retrieved from Notion API");
       return [];
@@ -22,16 +72,8 @@ const getPages = async (params: { databaseId: string }) => {
 
     const formattedPageList = pages.map((page) => ({
       id: page.id,
-      title:
-        (
-          (page.properties?.Name as TitlePropertyValue)
-            ?.title[0] as RichTextTextInput
-        ).text?.content ?? "",
-      author:
-        (
-          (page.properties?.Author as RichTextPropertyValue)
-            ?.rich_text[0] as RichTextTextInput
-        )?.text?.content ?? "",
+      title: page?.properties?.title?.title?.[0].plain_text ?? "",
+      author: page?.properties?.author?.rich_text?.[0].plain_text ?? "",
     }));
 
     return formattedPageList;
@@ -48,7 +90,8 @@ const addPage = async (params: {
 }) => {
   const { databaseId, title, author } = params;
   try {
-    const body: PagesCreateParameters = {
+    //TODO: fix this
+    const body: any = {
       parent: {
         database_id: databaseId,
       },
@@ -83,48 +126,46 @@ const addClippingsToPage = async (params: {
 }) => {
   const { payload, pageId } = params;
 
-  const bulletedListItemBlocks: BulletedListItemBlock[] = payload.map(
-    (item) => {
-      return {
-        object: "block",
-        id: "",
-        has_children: false,
-        created_time: "",
-        last_edited_time: "",
-        type: "bulleted_list_item",
-        bulleted_list_item: {
-          text: [
-            {
-              type: "text",
-              text: { content: item.quote },
-              annotations: {
-                bold: false,
-                italic: false,
-                strikethrough: false,
-                underline: false,
-                code: false,
-                color: "default",
-              },
-              plain_text: item.quote,
+  const bulletedListItemBlocks: any = payload.map((item) => {
+    return {
+      object: "block",
+      id: "",
+      has_children: false,
+      created_time: "",
+      last_edited_time: "",
+      type: "bulleted_list_item",
+      bulleted_list_item: {
+        text: [
+          {
+            type: "text",
+            text: { content: item.quote },
+            annotations: {
+              bold: false,
+              italic: false,
+              strikethrough: false,
+              underline: false,
+              code: false,
+              color: "default",
             },
-            {
-              type: "text",
-              text: { content: ` - ${item.info}` },
-              annotations: {
-                bold: false,
-                italic: true,
-                strikethrough: false,
-                underline: false,
-                code: false,
-                color: "default",
-              },
-              plain_text: ` - ${item.info}`,
+            plain_text: item.quote,
+          },
+          {
+            type: "text",
+            text: { content: ` - ${item.info}` },
+            annotations: {
+              bold: false,
+              italic: true,
+              strikethrough: false,
+              underline: false,
+              code: false,
+              color: "default",
             },
-          ],
-        },
-      };
-    }
-  );
+            plain_text: ` - ${item.info}`,
+          },
+        ],
+      },
+    };
+  });
 
   try {
     return await client.blocks.children.append({
@@ -141,4 +182,5 @@ export const notion = {
   getPages,
   addPage,
   addClippingsToPage,
+  getBooksWithMissingFields,
 };

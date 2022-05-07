@@ -14,7 +14,7 @@ export const makeResultResponse = <R>(response: R) => {
   return {
     statusCode: 200,
     headers: {
-      "Access-Control-Allow-Origin": allowedOrigins[0],
+      "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify(response),
   };
