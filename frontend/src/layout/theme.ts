@@ -8,4 +8,8 @@ export const theme = {
     fontSize: [12, 12, 16],
     fontFamily: "Poppins",
   },
+  colors: {
+    white: "#F7F7F7",
+    black: "#112633",
+  },
 };
