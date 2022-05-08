@@ -1,5 +1,4 @@
 import { Client } from "@notionhq/client";
-import {} from "@notionhq/client/build/src/api-endpoints";
 
 import { config } from "../environment";
 import { RawDatabaseQueryResponse } from "./types";
@@ -57,6 +56,92 @@ export const getBooksWithMissingFields = async (params: {
   } catch (e) {
     console.log("Error retrieving books with missing fields", e);
   }
+};
+
+export enum Properties {
+  RICH_TEXT = "rich_text",
+  MULTI_SELECT = "multi_select",
+  FILES = "files",
+  URL = "url",
+}
+
+export interface NotionPropertyData {
+  propertyType: Properties;
+  propertyName: string;
+  data: unknown;
+}
+
+const formatToNotionPropeties = (type: Properties, data: any) => {
+  const formatMultiSelect = (items: string[]) => {
+    return items.map((item) => ({
+      name: item,
+    }));
+  };
+
+  switch (type) {
+    case Properties.RICH_TEXT:
+      return {
+        [Properties.RICH_TEXT]: [
+          {
+            type: "text",
+            text: {
+              content: data,
+            },
+          },
+        ],
+      };
+    case Properties.MULTI_SELECT:
+      return {
+        [Properties.MULTI_SELECT]: formatMultiSelect(data),
+      };
+    case Properties.FILES:
+      return {
+        [Properties.FILES]: [
+          {
+            type: "external",
+            name: data,
+            external: {
+              url: data,
+            },
+          },
+        ],
+      };
+    case Properties.URL:
+      return {
+        [Properties.URL]: data,
+      };
+    default:
+      return null;
+  }
+};
+
+const updatePage = async ({
+  pageId,
+  payload,
+}: {
+  pageId: string;
+  payload: NotionPropertyData[];
+}) => {
+  if (!payload.length) {
+    console.log("Nothing to update, returning early...");
+    return;
+  }
+  const properties = payload.reduce(
+    (prev, { propertyName, propertyType, data }) => {
+      return {
+        ...prev,
+        [propertyName]: formatToNotionPropeties(propertyType, data),
+      };
+    },
+    {}
+  );
+
+  const response = await client.pages.update({
+    page_id: pageId,
+    properties,
+  });
+
+  return { id: response.id };
 };
 
 const getPages = async (params: { databaseId: string }) => {
@@ -183,4 +268,5 @@ export const notion = {
   addPage,
   addClippingsToPage,
   getBooksWithMissingFields,
+  updatePage,
 };
