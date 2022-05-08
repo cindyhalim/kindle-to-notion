@@ -34,13 +34,16 @@ export const getBooksWithMissingFields = async (params: {
 
     console.log("Query successful, formatting data");
 
-    const booksWithMissingFields = pages.map((page) => ({
-      id: page.id,
-      title: page?.properties?.title?.title?.[0]?.plain_text ?? "",
-      author: page?.properties?.author?.rich_text?.[0]?.plain_text ?? "",
-      missingLink: !page?.properties?.["has epub link"]?.formula?.boolean,
-      missingDetails: !page?.properties?.["has details"]?.formula?.boolean,
-    }));
+    const booksWithMissingFields = pages
+      .map((page) => ({
+        id: page.id,
+        title: page?.properties?.title?.title?.[0]?.plain_text ?? "",
+        author: page?.properties?.author?.rich_text?.[0]?.plain_text ?? "",
+        missingLink: !page?.properties?.["has epub link"]?.formula?.boolean,
+        missingDetails: !page?.properties?.["has details"]?.formula?.boolean,
+        isbn: page?.properties?.isbn?.[0]?.plain_text ?? "",
+      }))
+      .filter((page) => page.isbn);
 
     const formattedBooksWithMissingFields = booksWithMissingFields.reduce(
       (prev, curr) => {

@@ -79,6 +79,19 @@ export type RawDatabaseQueryResponse = {
           href: null;
         }[];
       };
+      isbn: {
+        id: string;
+        type: "rich_text";
+        rich_text: {
+          type: "text";
+          text: {
+            content: string;
+            link: string | null;
+          };
+          plain_text: "string";
+          href: null;
+        }[];
+      };
       pages: {
         id: "drf%3E";
         type: "rich_text";
