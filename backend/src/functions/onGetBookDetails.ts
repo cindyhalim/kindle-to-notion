@@ -10,7 +10,13 @@ import {
 const controller = async (
   input: IGetBookInfoPayload
 ): Promise<IGetBookDetailsOutput> => {
-  const { title, executionName, isbn } = input;
+  const { title, executionName, isbn, isMissingDetails } = input;
+
+  if (!isMissingDetails) {
+    return {
+      status: "ReturnEarly: returning early as book already has details",
+    };
+  }
 
   const { page, browser } = await puppeteer.launchAndGoTo({
     link: "https://www.goodreads.com",
@@ -58,7 +64,7 @@ const controller = async (
       coverUrl: coverUrl,
     };
   } catch (e) {
-    console.log("Error retrieving book details", e);
+    console.log("Error getting book details", e);
     const screenshot = await page.screenshot();
     const url = await s3.uploadObject({
       key: executionName,
@@ -67,7 +73,7 @@ const controller = async (
 
     await browser.close();
     return {
-      error: url,
+      status: `Error retrieving book details– last screenshot: ${url}`,
     };
   }
 };

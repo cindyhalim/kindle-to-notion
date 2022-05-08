@@ -11,12 +11,12 @@ const retrier = [
   },
 ];
 
-export const bookInfoStateMachine: StateMachine = {
-  BookInfoStateMachine: {
-    id: "BookInfoStateMachine",
-    name: "book-info-state-machine-${self:provider.stage}",
+export const booksStateMachine: StateMachine = {
+  BooksStateMachine: {
+    id: "BooksStateMachine",
+    name: "books-state-machine-${self:provider.stage}",
     definition: {
-      Comment: "Orchestrates retrieving book info",
+      Comment: "Orchestrates logic to retrieve book details and url",
       StartAt: "GetBookInfo",
       States: {
         GetBookInfo: {
@@ -36,12 +36,12 @@ export const bookInfoStateMachine: StateMachine = {
                   Type: "Choice",
                   Choices: [
                     {
-                      Variable: "$.details.error",
+                      Variable: "$.details.status",
                       IsPresent: false,
                       Next: "UpdateBookDetails",
                     },
                     {
-                      Variable: "$.details.error",
+                      Variable: "$.details.status",
                       IsPresent: true,
                       Next: "BookDetailsReturnEarly",
                     },
@@ -71,12 +71,12 @@ export const bookInfoStateMachine: StateMachine = {
                   Type: "Choice",
                   Choices: [
                     {
-                      Variable: "$.url.error",
+                      Variable: "$.url.status",
                       IsPresent: false,
                       Next: "UpdateBookLink",
                     },
                     {
-                      Variable: "$.url.error",
+                      Variable: "$.url.status",
                       IsPresent: true,
                       Next: "BookLinkReturnEarly",
                     },

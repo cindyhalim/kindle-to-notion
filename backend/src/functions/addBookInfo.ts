@@ -16,6 +16,8 @@ type AddBookInfoEventBody = {
     author: string;
     pageId: string;
     title: string;
+    isMissingDetails: boolean;
+    isMissingLink: boolean;
   }[];
 };
 const controller = async (
@@ -30,16 +32,13 @@ const controller = async (
 
   try {
     const stateExecutions = books.map((book) => {
-      const pageId = book.pageId;
-      const executionName = `${pageId}_${uuidv4()}`;
+      const executionName = `${book.pageId}_${uuidv4()}`;
       const stepFunctionInput = {
         executionName,
         databaseId,
-        pageId,
-        author: book.author,
-        title: book.title,
-        isbn: book.isbn,
+        ...book,
       };
+
       stepFunctions
         .startExecution({
           stateMachineArn: process.env.STATE_MACHINE_ARN,

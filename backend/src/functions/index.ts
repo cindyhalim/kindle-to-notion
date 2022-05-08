@@ -19,6 +19,7 @@ export const handlerFunctions: Serverless["functions"] = {
         http: {
           method: "get",
           path: `/databases/{databaseId}/books`,
+          cors: true,
           request: {
             parameters: {
               paths: {
@@ -36,17 +37,18 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         Effect: "Allow",
         Action: ["states:startExecution"],
-        Resource: [{ Ref: "BookInfoStateMachine" }],
+        Resource: [{ Ref: "BooksStateMachine" }],
       },
     ],
     environment: {
-      STATE_MACHINE_ARN: "${self:resources.Outputs.BookInfoStateMachine.Value}",
+      STATE_MACHINE_ARN: "${self:resources.Outputs.BooksStateMachine.Value}",
     },
     events: [
       {
         http: {
           method: "post",
           path: `/databases/{databaseId}/books`,
+          cors: true,
           request: {
             parameters: {
               paths: {

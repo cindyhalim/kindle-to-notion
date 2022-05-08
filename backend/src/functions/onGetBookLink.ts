@@ -8,7 +8,12 @@ const controller = async ({
   title,
   author,
   executionName,
+  isMissingLink,
 }: IGetBookInfoPayload): Promise<IGetBookLinkOutput> => {
+  if (!isMissingLink) {
+    return { status: "ReturnEarly: returning early as book already has link" };
+  }
+
   const searchInputText = `${title} ${author} epub free`.toLowerCase();
   const urlParams = new URLSearchParams(searchInputText);
 
@@ -31,7 +36,7 @@ const controller = async ({
 
     return { ePub: ePubUrl };
   } catch (e) {
-    console.log("Error retrieving book details", e);
+    console.log("Error retrieving book link", e);
     const screenshot = await page.screenshot();
     const url = await s3.uploadObject({
       key: executionName,
@@ -40,7 +45,7 @@ const controller = async ({
 
     await browser.close();
     return {
-      error: url,
+      status: `Error retrieving book link last screenshot: ${url}`,
     };
   }
 };

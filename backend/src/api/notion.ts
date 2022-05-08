@@ -38,8 +38,8 @@ export const getBooksWithMissingFields = async (params: {
       pageId: page.id,
       title: page?.properties?.title?.title?.[0]?.plain_text ?? "",
       author: page?.properties?.author?.rich_text?.[0]?.plain_text ?? "",
-      missingLink: !page?.properties?.["has epub link"]?.formula?.boolean,
-      missingDetails: !page?.properties?.["has details"]?.formula?.boolean,
+      isMissingLink: !page?.properties?.["has epub link"]?.formula?.boolean,
+      isMissingDetails: !page?.properties?.["has details"]?.formula?.boolean,
       isbn: page?.properties?.isbn?.rich_text?.[0]?.plain_text ?? "",
     }));
 
@@ -101,7 +101,7 @@ const formatToNotionPropeties = (type: Properties, data: any) => {
         [Properties.FILES]: [
           {
             type: "external",
-            name: data,
+            name: data.slice(0, 100),
             external: {
               url: data,
             },

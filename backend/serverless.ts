@@ -1,5 +1,5 @@
 import { kindleNotionBucket } from "src/resources/s3";
-import { bookInfoStateMachine } from "src/resources/step-functions";
+import { booksStateMachine } from "src/resources/step-functions";
 import { Serverless } from "src/types/serverless";
 import { handlerFunctions } from "./src/functions";
 
@@ -52,17 +52,17 @@ const serverlessConfiguration: Serverless = {
 
   functions: { ...handlerFunctions },
   stepFunctions: {
-    stateMachines: { ...bookInfoStateMachine },
+    stateMachines: { ...booksStateMachine },
   },
   resources: {
     Resources: {
       ...kindleNotionBucket,
     },
     Outputs: {
-      BookInfoStateMachine: {
+      BooksStateMachine: {
         Description: "The ARN of the state machine",
         Value: {
-          Ref: "BookInfoStateMachine",
+          Ref: "BooksStateMachine",
         },
       },
     },

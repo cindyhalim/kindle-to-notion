@@ -5,16 +5,18 @@ export interface IGetBookInfoPayload {
   author: string;
   title: string;
   isbn: string;
+  isMissingLink: boolean;
+  isMissingDetails: boolean;
 }
 
 export interface IGetBookDetailsOutput {
   pages?: string;
   genre?: string[];
   coverUrl?: string;
-  error?: string;
+  status?: string;
 }
 
 export interface IGetBookLinkOutput {
-  error?: string;
+  status?: string;
   ePub?: string | null;
 }
