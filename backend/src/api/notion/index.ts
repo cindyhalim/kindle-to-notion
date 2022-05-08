@@ -1,64 +1,9 @@
 import { Client } from "@notionhq/client";
 
-import { config } from "../environment";
-import { RawDatabaseQueryResponse } from "./types";
+import { config } from "../../environment";
+import { RawDatabaseQueryGenericPageResult } from "./types";
 
 const client = new Client({ auth: config.notionToken });
-
-export const getBooksWithMissingFields = async (params: {
-  databaseId: string;
-}) => {
-  const { databaseId } = params;
-  try {
-    const response = await client.databases.query({
-      database_id: databaseId,
-      filter: {
-        or: [
-          {
-            property: "has epub link",
-            checkbox: {
-              equals: false,
-            },
-          },
-          {
-            property: "has details",
-            checkbox: {
-              equals: false,
-            },
-          },
-        ],
-      },
-    });
-
-    const pages = response?.results as RawDatabaseQueryResponse["results"];
-
-    console.log("Query successful, formatting data");
-
-    const booksWithMissingFields = pages.map((page) => ({
-      pageId: page.id,
-      title: page?.properties?.title?.title?.[0]?.plain_text ?? "",
-      author: page?.properties?.author?.rich_text?.[0]?.plain_text ?? "",
-      isMissingLink: !page?.properties?.["has epub link"]?.formula?.boolean,
-      isMissingDetails: !page?.properties?.["has details"]?.formula?.boolean,
-      isbn: page?.properties?.isbn?.rich_text?.[0]?.plain_text ?? "",
-    }));
-
-    const formattedBooksWithMissingFields = booksWithMissingFields.reduce(
-      (prev, curr) => {
-        const requiredFields = [curr.title, curr.author, curr.isbn];
-        if (requiredFields.every(Boolean)) {
-          return [...prev, curr];
-        }
-        return prev;
-      },
-      []
-    );
-
-    return formattedBooksWithMissingFields;
-  } catch (e) {
-    console.log("Error retrieving books with missing fields", e);
-  }
-};
 
 export enum Properties {
   RICH_TEXT = "rich_text",
@@ -67,9 +12,9 @@ export enum Properties {
   URL = "url",
 }
 
-export interface NotionPropertyData {
+export interface NotionPropertyData<T> {
   propertyType: Properties;
-  propertyName: string;
+  propertyName: keyof T;
   data: unknown;
 }
 
@@ -117,12 +62,12 @@ const formatToNotionPropeties = (type: Properties, data: any) => {
   }
 };
 
-const updatePage = async ({
+const updatePageProperties = async <T>({
   pageId,
   payload,
 }: {
   pageId: string;
-  payload: NotionPropertyData[];
+  payload: NotionPropertyData<T>[];
 }) => {
   if (!payload.length) {
     console.log("Nothing to update, returning early...");
@@ -146,55 +91,110 @@ const updatePage = async ({
   return { id: response.id };
 };
 
-const getPages = async (params: { databaseId: string }) => {
-  const { databaseId } = params;
+type NotionFilterOperator = "and" | "or";
+type Filter<T> = {
+  propertiesMap: Record<keyof T, any>;
+  operator: NotionFilterOperator;
+  values: { property: keyof T; value: boolean }[];
+};
+
+type NotionFilter<T> = {
+  [key: string]: {
+    property: keyof T;
+    checkbox: {
+      equals: boolean;
+    };
+  }[];
+};
+
+// transform CHECKBOX properties to notion filter query
+const transformFilterToNotion = <T>({
+  operator,
+  values: filterValues,
+  propertiesMap,
+}: Filter<T>): NotionFilter<T> => {
+  const filterablePropertyTypes = ["checkbox", "formula"];
+  const filterableProperties = filterValues.filter((filter) =>
+    filterablePropertyTypes.includes(propertiesMap[filter.property]?.type)
+  );
+  if (!filterableProperties.length) {
+    return null;
+  }
+
+  return {
+    [operator]: filterableProperties.map((filter) => ({
+      property: filter.property,
+      checkbox: {
+        equals: filter.value,
+      },
+    })),
+  };
+};
+
+type RawDatabaseQueryPageResult<T> = RawDatabaseQueryGenericPageResult & {
+  properties: T;
+};
+
+const getPages = async <T extends unknown>(params: {
+  databaseId: string;
+  filter?: Filter<T>;
+}): Promise<{
+  pages: RawDatabaseQueryPageResult<T>[];
+}> => {
+  const { databaseId, filter } = params;
   try {
-    const response = await client.databases.query({ database_id: databaseId });
-    const pages = response?.results as RawDatabaseQueryResponse["results"];
+    const filterOptions = {
+      filter: transformFilterToNotion<T>(filter),
+    } as Record<string, unknown>;
+    const response = await client.databases.query({
+      database_id: databaseId,
+      ...(filter && filterOptions),
+    });
+    const pages = response?.results as RawDatabaseQueryPageResult<T>[];
 
     if (!pages) {
       console.log("No pages retrieved from Notion API");
-      return [];
+      return { pages: [] };
     }
 
-    const formattedPageList = pages.map((page) => ({
-      id: page.id,
-      title: page?.properties?.title?.title?.[0].plain_text ?? "",
-      author: page?.properties?.author?.rich_text?.[0].plain_text ?? "",
-    }));
-
-    return formattedPageList;
+    return { pages };
   } catch (e) {
     console.log("Error retrieving pages");
     throw e;
   }
 };
 
-const addPage = async (params: {
+const addPage = async <T>(params: {
   databaseId: string;
-  title: string;
-  author?: string;
+  propertiesMap: Record<keyof T, any>;
+  textProperties: {
+    key: keyof T;
+    value: string;
+  }[];
 }) => {
-  const { databaseId, title, author } = params;
+  const { databaseId, propertiesMap, textProperties: properties } = params;
+
   try {
-    //TODO: fix this
-    const body: any = {
+    const propertiesBody = properties.reduce((prev, curr) => {
+      const propertyType = propertiesMap[curr.key].type;
+      const content = formatToNotionPropeties(propertyType, curr.value);
+
+      if (content) {
+        return {
+          ...prev,
+          [curr.key]: content,
+        };
+      }
+      return { ...prev };
+    }, {});
+
+    const body = {
       parent: {
         database_id: databaseId,
       },
-      properties: {
-        Name: {
-          type: "title",
-          title: [{ type: "text", text: { content: title } }],
-        },
-        ...(author && {
-          Author: {
-            type: "rich_text",
-            rich_text: [{ type: "text", text: { content: author ?? "" } }],
-          },
-        }),
-      },
+      properties: propertiesBody,
     };
+
     const response = await client.pages.create(body);
     return { id: response.id };
   } catch (e) {
@@ -215,14 +215,12 @@ const addClippingsToPage = async (params: {
 
   const bulletedListItemBlocks: any = payload.map((item) => {
     return {
+      synced_block: "",
       object: "block",
-      id: "",
       has_children: false,
-      created_time: "",
-      last_edited_time: "",
       type: "bulleted_list_item",
       bulleted_list_item: {
-        text: [
+        rich_text: [
           {
             type: "text",
             text: { content: item.quote },
@@ -269,6 +267,5 @@ export const notion = {
   getPages,
   addPage,
   addClippingsToPage,
-  getBooksWithMissingFields,
-  updatePage,
+  updatePageProperties,
 };

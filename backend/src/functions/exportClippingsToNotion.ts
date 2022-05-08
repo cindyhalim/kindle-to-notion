@@ -1,5 +1,7 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
+import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
+import { RawReadingListProperties } from "src/api/notion/types";
 import { notion } from "../api/notion";
 import {
   makeResultResponse,
@@ -30,23 +32,39 @@ const controller = async (
   }
 
   console.log("Retrieving pages");
-  const pages = await notion.getPages({ databaseId });
+  const { pages: rawPages } = await notion.getPages<RawReadingListProperties>({
+    databaseId,
+  });
+
+  const pages = rawPages.map((page) => ({
+    id: page.id,
+    title: (page?.properties?.title?.title?.[0].plain_text ?? "").toLowerCase(),
+    author: (
+      page?.properties?.author?.rich_text?.[0].plain_text ?? ""
+    ).toLowerCase(),
+  }));
 
   for (const item of payload) {
+    const payloadTitle = item.title.toLowerCase();
+    const payloadAuthor = item.author.toLowerCase();
     console.log(`Finding page for ${item.title} - ${item.author}`);
     const page = pages.find(
-      ({ title, author }) => item.title === title && item.author === author
+      ({ title, author }) => payloadTitle === title && payloadAuthor === author
     );
     let pageId = page?.id || "";
 
-    if (!page) {
+    if (!pageId) {
       console.log(
         `No page found for ${item.title} - ${item.author}, creating new one`
       );
-      const newPage = await notion.addPage({
+
+      const newPage = await notion.addPage<RawReadingListProperties>({
         databaseId,
-        title: item.title,
-        author: item.author,
+        propertiesMap: READING_LIST_PROPERTIES,
+        textProperties: [
+          { key: "title", value: item.title },
+          { key: "author", value: item.author },
+        ],
       });
 
       pageId = newPage.id;

@@ -72,22 +72,22 @@ export const handlerFunctions: Serverless["functions"] = {
   onUpdateBookLink: {
     handler: "src/functions/onUpdateBookLink.handler",
   },
-  // addToNotion: {
-  //   handler: "src/functions/addToNotion.handler",
-  //   events: [
-  //     {
-  //       http: {
-  //         method: "post",
-  //         path: `/databases/{databaseId}`,
-  //         request: {
-  //           parameters: {
-  //             paths: {
-  //               databaseId: true,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   ],
-  // },
+  exportClippingsToNotion: {
+    handler: "src/functions/exportClippingsToNotion.handler",
+    events: [
+      {
+        http: {
+          method: "post",
+          path: `/databases/{databaseId}/clippings/export`,
+          request: {
+            parameters: {
+              paths: {
+                databaseId: true,
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
 };

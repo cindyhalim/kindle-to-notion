@@ -1,6 +1,7 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { notion, NotionPropertyData, Properties } from "src/api/notion";
+import { RawReadingListProperties } from "src/api/notion/types";
 import type {
   IGetBookInfoPayload,
   IGetBookLinkOutput,
@@ -14,10 +15,10 @@ interface IUpdateBookLinkEvent extends IGetBookInfoPayload {
 const controller = async (event: IUpdateBookLinkEvent) => {
   const { pageId, url } = event;
 
-  const propertyData: NotionPropertyData[] = [
+  const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
     ...(url.ePub && [
       {
-        propertyName: "epub link",
+        propertyName: "epub link" as const,
         propertyType: Properties.URL,
         data: url.ePub,
       },
@@ -25,7 +26,11 @@ const controller = async (event: IUpdateBookLinkEvent) => {
   ];
 
   try {
-    const response = await notion.updatePage({ pageId, payload: propertyData });
+    const response =
+      await notion.updatePageProperties<RawReadingListProperties>({
+        pageId,
+        payload: propertyData,
+      });
     return makeResultResponse({ response });
   } catch (e) {
     throw new Error("Error updating book link in Notion", e);

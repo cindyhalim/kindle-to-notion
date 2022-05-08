@@ -1,6 +1,7 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { notion, NotionPropertyData, Properties } from "src/api/notion";
+import { RawReadingListProperties } from "src/api/notion/types";
 import type {
   IGetBookDetailsOutput,
   IGetBookInfoPayload,
@@ -14,24 +15,24 @@ interface IUpdateBookDetailsEvent extends IGetBookInfoPayload {
 const controller = async (event: IUpdateBookDetailsEvent) => {
   const { pageId, details } = event;
 
-  const propertyData: NotionPropertyData[] = [
+  const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
     ...(details.genre.length && [
       {
-        propertyName: "genre",
+        propertyName: "genre" as const,
         propertyType: Properties.MULTI_SELECT,
         data: details.genre,
       },
     ]),
     ...(details.coverUrl && [
       {
-        propertyName: "book cover",
+        propertyName: "book cover" as const,
         propertyType: Properties.FILES,
         data: details.coverUrl,
       },
     ]),
     ...(details.pages && [
       {
-        propertyName: "pages",
+        propertyName: "pages" as const,
         propertyType: Properties.RICH_TEXT,
         data: details.pages,
       },
@@ -39,7 +40,11 @@ const controller = async (event: IUpdateBookDetailsEvent) => {
   ];
 
   try {
-    const response = await notion.updatePage({ pageId, payload: propertyData });
+    const response =
+      await notion.updatePageProperties<RawReadingListProperties>({
+        pageId,
+        payload: propertyData,
+      });
     return makeResultResponse({ response });
   } catch (e) {
     throw new Error("Error updating book details in Notion", e);
