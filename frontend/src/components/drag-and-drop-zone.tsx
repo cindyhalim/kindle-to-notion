@@ -1,128 +1,97 @@
-import React, { useEffect, useState } from "react";
-import { Box, BoxProps, Flex, SxStyleProp, Text } from "rebass";
+import React, { useState } from "react";
+import { Box, BoxProps, SxStyleProp } from "rebass";
 
-import {
-  formatParsedClippings,
-  IFormattedClipping,
-  parseRawClippingData,
-} from "../utils";
+import { theme } from "../layout/theme";
+import { ErrorToast } from "./error-toast";
 import { UploadLoading } from "./upload-loading";
 
-interface IProps {
-  reset: boolean;
-  defaultAction: (data: IFormattedClipping[]) => void;
-  onError: () => void;
+interface IDragAndDropZoneProps {
+  validate: (file: File) => boolean;
   children: (props: {
     loading: boolean;
-    data: IFormattedClipping[];
-  }) => JSX.Element | undefined;
+    data: File | null;
+  }) => JSX.Element | null;
 }
-export const DragAndDropZone: React.FC<IProps> = ({
+type TDragEvent = React.DragEvent<HTMLDivElement>;
+
+export const DragAndDropZone: React.FC<IDragAndDropZoneProps> = ({
+  validate,
   children,
-  reset,
-  defaultAction,
-  onError,
 }) => {
-  const [data, setData] = useState<IFormattedClipping[]>([]);
+  const [data, setData] = useState<File | null>(null);
+  const [hasError, setHasError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  type TDragEvent = React.DragEvent<HTMLDivElement>;
+  const noUploadInitiated = !data && !isLoading;
 
-  useEffect(() => {
-    if (reset) {
-      setData([]);
-    }
-  }, [reset]);
-
-  const resetDefault = (event: TDragEvent) => {
+  const blockDefault = (event: TDragEvent) => {
     event.preventDefault();
     event.stopPropagation();
   };
-
-  const noUploadInitiated = !data.length && !isLoading;
 
   const handleDrop = (event: TDragEvent) => {
     setIsLoading(true);
     setIsDragging(false);
     try {
-      resetDefault(event);
+      blockDefault(event);
 
       const file = event.dataTransfer.files[0];
 
-      if (file.type !== "text/plain") {
+      if (!validate(file)) {
         setIsLoading(false);
         throw Error;
       }
 
-      const reader = new FileReader();
-      reader.readAsText(file);
-      reader.onload = () => {
-        const result = reader.result;
-
-        if (result) {
-          const parsedClippingData = parseRawClippingData(result);
-          const formattedParsedData = formatParsedClippings(parsedClippingData);
-
-          setData(formattedParsedData);
-          defaultAction(formattedParsedData);
-        }
-      };
+      setData(file);
     } catch (e) {
-      onError();
+      setHasError(true);
       return;
     }
   };
 
-  const onDragSx: SxStyleProp = {
-    border: "5px dotted grey",
-    backgroundColor: "grey",
-    opacity: "20%",
-  };
-
-  if (isLoading) {
-    return <UploadLoading onLoopComplete={() => setIsLoading(false)} />;
-  }
-
   const dragAndDropProps: BoxProps = {
     onDragLeave: (event) => {
-      resetDefault(event);
+      blockDefault(event);
       setIsDragging(false);
     },
     onDragOver: (event) => {
-      resetDefault(event);
+      blockDefault(event);
       setIsDragging(true);
     },
     onDrop: handleDrop,
   };
 
+  const onDragSx: SxStyleProp = {
+    backgroundColor: theme.colors.black,
+    opacity: "20%",
+  };
+
   return (
-    <Box
-      {...(noUploadInitiated && dragAndDropProps)}
-      sx={{
-        minHeight: "350px",
-        width: "100%",
-        border: data.length ? undefined : "5px dotted black",
-        borderRadius: "8px",
-        display: noUploadInitiated ? "flex" : "block",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        ...(isDragging && onDragSx),
-      }}
-    >
-      {noUploadInitiated ? (
-        <>
-          <Text>1. Connect your Kindle via USB</Text>
-          <Text>2. Open Kindle/documents </Text>
-          <Text>3. Drag and drop MyClippings.txt here</Text>
-        </>
-      ) : (
-        children({
-          loading: isLoading,
+    <>
+      <ErrorToast isVisible={hasError} setIsVisible={setHasError} />
+      <Box
+        {...(noUploadInitiated && dragAndDropProps)}
+        sx={{
+          minHeight: "350px",
+          width: "100%",
+          border: `5px dotted ${theme.colors.black}`,
+          borderRadius: "8px",
+          display: noUploadInitiated ? "flex" : "block",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          ...(isDragging && onDragSx),
+        }}
+      >
+        {isLoading && (
+          <UploadLoading onLoopComplete={() => setIsLoading(false)} />
+        )}
+        {children({
           data,
-        })
-      )}
-    </Box>
+          loading: isLoading,
+        })}
+      </Box>
+    </>
   );
 };
