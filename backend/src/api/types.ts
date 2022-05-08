@@ -75,12 +75,12 @@ export type RawDatabaseQueryResponse = {
             content: string;
             link: string | null;
           };
-          plain_text: "string";
+          plain_text: string;
           href: null;
         }[];
       };
       isbn: {
-        id: string;
+        id: "xEOE";
         type: "rich_text";
         rich_text: {
           type: "text";
@@ -88,7 +88,7 @@ export type RawDatabaseQueryResponse = {
             content: string;
             link: string | null;
           };
-          plain_text: "string";
+          plain_text: string;
           href: null;
         }[];
       };
