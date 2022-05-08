@@ -1,21 +1,24 @@
 import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { Box, Flex, Text } from "rebass";
-import { Button } from "../../components/button";
+import { isError, useMutation, useQuery } from "react-query";
+import { Box, Text } from "rebass";
+import { ButtonTypeEnum, IButtonProps } from "../../components/button";
+import { ErrorToast } from "../../components/error-toast";
 import { DetailsIcon, LinkIcon } from "../../components/icons";
 import { ListCard } from "../../components/list-card";
 import { config } from "../../environment";
 import { BaseLayout } from "../../layout/base-layout";
 import { theme } from "../../layout/theme";
+import { Legend } from "./legend";
 
 type RawGetBooksResponse = {
   data: {
     author: string;
-    id: string;
-    missingDetails: boolean;
-    missingLink: boolean;
+    pageId: string;
+    isMissingDetails: boolean;
+    isMissingLink: boolean;
     title: string;
+    isbn: string;
   }[];
 };
 
@@ -33,18 +36,57 @@ const getBooks = async () => {
   return response.data.data;
 };
 
+interface UpdateBooksPayload {
+  books: {
+    author: string;
+    pageId: string;
+    title: string;
+    isbn: string;
+  }[];
+}
+const updateBooks = async (payload: UpdateBooksPayload) => {
+  const baseUrl = config.serviceUrl;
+  const databaseId = config.notionDatabaseId;
+
+  const response: AxiosResponse<RawGetBooksResponse> = await axios.post(
+    `${baseUrl}/databases/${databaseId}/books`,
+    payload
+  );
+
+  return response.data;
+};
+
 type SelectedData = {
   [key: string]: RawGetBooksResponse["data"][0] & { selected: boolean };
 };
 export const GetBooks: React.FC = () => {
   const [selectedData, setSelectedData] = useState<SelectedData | null>(null);
-  const { isLoading, error, data } = useQuery("books", getBooks);
+  const [showErrorToast, setShowErrorToast] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
+  const { isLoading, isFetching, error, data, refetch } = useQuery(
+    "getBooks",
+    getBooks,
+    {
+      staleTime: Infinity,
+    }
+  );
+  const isEmpty = data && !data.length;
 
+  const { mutate, isLoading: isUpdatingBooks } = useMutation(
+    "updateBooks",
+    updateBooks,
+    {
+      onError: () => {
+        setShowErrorToast(true);
+      },
+      onSuccess: () => {
+        setSuccess(true);
+      },
+    }
+  );
   const noneSelected =
     selectedData &&
-    Object.values(selectedData).every((item) => {
-      return !item;
-    });
+    Object.keys(selectedData).every((key) => !selectedData[key].selected);
 
   const handleButtonClick = ({
     allBooks,
@@ -53,16 +95,17 @@ export const GetBooks: React.FC = () => {
     allBooks: RawGetBooksResponse["data"];
     selectedBooks: SelectedData | null;
   }) => {
+    if (showErrorToast) {
+      setShowErrorToast(false);
+    }
     if (!selectedBooks) {
       return;
     }
     const booksToSubmit = allBooks.filter(
-      (book) => selectedBooks[book.id].selected
+      (book) => selectedBooks[book.pageId].selected
     );
 
-    //TODO: replace with api call
-    console.log(booksToSubmit);
-    return booksToSubmit;
+    mutate({ books: booksToSubmit });
   };
 
   useEffect(() => {
@@ -70,7 +113,7 @@ export const GetBooks: React.FC = () => {
       const dataWithSelected = data.reduce((prev, curr) => {
         return {
           ...prev,
-          [curr.id]: {
+          [curr.pageId]: {
             ...curr,
             selected: true,
           },
@@ -80,93 +123,128 @@ export const GetBooks: React.FC = () => {
     }
   }, [data]);
 
-  if (isLoading) {
-    return <>LOADING...</>;
-  }
-
-  if (error) {
-    return <>Something went wrong!</>;
-  }
-
-  if (!data) {
-    return <></>;
-  }
-
-  const legend = [
-    { icon: <LinkIcon />, text: "missing link" },
-    { icon: <DetailsIcon />, text: "missing details" },
+  const buttons: IButtonProps[] = [
+    {
+      disabled: isUpdatingBooks,
+      onClick: () => {},
+      type: ButtonTypeEnum.SECONDARY,
+      children: "home",
+    },
+    {
+      disabled: !!noneSelected || isUpdatingBooks || success,
+      isLoading: isFetching,
+      onClick: () => {
+        if (data) {
+          handleButtonClick({ allBooks: data, selectedBooks: selectedData });
+        }
+      },
+      sx: { alignSelf: "center" },
+      children: "go",
+    },
   ];
 
+  const getEmptyState = () => (
+    <>
+      <Text sx={{ fontSize: 20, marginBottom: 40 }}>
+        {"you've added all your books! 🎉"}
+      </Text>
+      <Text sx={{ fontSize: [12, 14] }}>
+        {"should be seeing your reading list?"}
+      </Text>
+      <Text sx={{ fontSize: [12, 14] }}>
+        {"make sure your isbn, title, and author fields are populated"}
+      </Text>
+    </>
+  );
+
+  const getSuccessState = () => (
+    <>
+      <Text sx={{ fontSize: 20, marginBottom: 40 }}>{"success! 🍾"}</Text>
+      <Text sx={{ fontSize: [12, 14] }}>
+        {
+          "note: it may take some time for the updates to be reflected on notion"
+        }
+      </Text>
+    </>
+  );
+
   return (
-    <BaseLayout title={"scrape reading list"}>
-      <Flex
-        sx={{
-          maxWidth: "300px",
-          margin: "0 auto",
-          marginBottom: 20,
-        }}
-      >
-        {legend.map((item, idx) => (
-          <Flex key={idx} sx={{ alignItems: "center", marginLeft: idx && 25 }}>
-            {item.icon}
-            <Text sx={{ fontSize: 14, marginLeft: "5px" }}>{item.text}</Text>
-          </Flex>
-        ))}
-      </Flex>
-      <Flex
-        sx={{
-          flexDirection: "column",
-          minHeight: "500px",
-        }}
-      >
-        {data &&
-          selectedData &&
-          data.map(({ title, author, id }) => (
-            <ListCard
-              key={id}
-              title={title}
-              subtitle={author}
-              isSelected={selectedData[id].selected}
-              onSelect={() =>
-                setSelectedData({
-                  ...selectedData,
-                  [id]: {
-                    ...selectedData[id],
-                    selected: !selectedData[id].selected,
-                  },
-                })
-              }
-              rightComponent={
-                <Box sx={{ display: "flex" }}>
-                  <LinkIcon
-                    color={
-                      selectedData[id].selected
-                        ? theme.colors.white
-                        : theme.colors.black
-                    }
-                    sx={{ marginRight: "5px" }}
-                  />
-                  <DetailsIcon
-                    color={
-                      selectedData[id].selected
-                        ? theme.colors.white
-                        : theme.colors.black
-                    }
-                  />
-                </Box>
-              }
-            />
-          ))}
-        <Button
-          disabled={!!noneSelected}
-          onClick={() =>
-            handleButtonClick({ allBooks: data, selectedBooks: selectedData })
-          }
-          sx={{ alignSelf: "center" }}
-        >
-          Get data
-        </Button>
-      </Flex>
+    <BaseLayout
+      title={"✨ prettify reading list ✨"}
+      buttons={buttons}
+      isLoading={isLoading || isFetching}
+      hasError={isError(error) || !data}
+      isEmpty={isEmpty}
+      refetch={refetch}
+    >
+      <ErrorToast isVisible={showErrorToast} setIsVisible={setShowErrorToast} />
+      {success ? (
+        getSuccessState()
+      ) : (
+        <>
+          {isEmpty && getEmptyState()}
+          {data && data.length && selectedData ? (
+            <>
+              <Legend />
+              <Box
+                sx={{
+                  maxHeight: "450px",
+                  overflowY: "auto",
+                  padding: 20,
+                  width: "100%",
+                }}
+              >
+                {data.map(
+                  (
+                    {
+                      title,
+                      author,
+                      pageId: id,
+                      isMissingDetails,
+                      isMissingLink,
+                    },
+                    idx
+                  ) => {
+                    const iconColor = selectedData[id].selected
+                      ? theme.colors.white
+                      : theme.colors.black;
+                    return (
+                      <ListCard
+                        key={idx}
+                        title={title}
+                        subtitle={author}
+                        isSelected={selectedData[id].selected}
+                        onSelect={() =>
+                          setSelectedData({
+                            ...selectedData,
+                            [id]: {
+                              ...selectedData[id],
+                              selected: !selectedData[id].selected,
+                            },
+                          })
+                        }
+                        rightComponent={
+                          <Box sx={{ display: "flex" }}>
+                            {isMissingLink && (
+                              <LinkIcon
+                                color={iconColor}
+                                sx={{ marginRight: "5px" }}
+                              />
+                            )}
+                            {isMissingDetails && (
+                              <DetailsIcon color={iconColor} />
+                            )}
+                          </Box>
+                        }
+                      />
+                    );
+                  }
+                )}
+              </Box>
+            </>
+          ) : null}
+        </>
+      )}
     </BaseLayout>
   );
 };
