@@ -1,4 +1,3 @@
-import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import { isError, useMutation, useQuery } from "react-query";
 import { Box, Text } from "rebass";
@@ -6,63 +5,24 @@ import { ButtonTypeEnum, IButtonProps } from "../../components/button";
 import { ErrorToast } from "../../components/error-toast";
 import { DetailsIcon, LinkIcon } from "../../components/icons";
 import { ListCard } from "../../components/list-card";
-import { config } from "../../environment";
+import {
+  getBooks,
+  RawGetBooksResponse,
+  updateBooks,
+} from "../../core/react-query";
 import { BaseLayout } from "../../layout/base-layout";
 import { theme } from "../../layout/theme";
 import { Legend } from "./legend";
 
-type RawGetBooksResponse = {
-  data: {
-    author: string;
-    pageId: string;
-    isMissingDetails: boolean;
-    isMissingLink: boolean;
-    title: string;
-    isbn: string;
-  }[];
-};
-
-const getBooks = async () => {
-  const baseUrl = config.serviceUrl;
-  const databaseId = config.notionDatabaseId;
-  const response: AxiosResponse<RawGetBooksResponse> = await axios.get(
-    `${baseUrl}/databases/${databaseId}/books`
-  );
-
-  if (!response.data) {
-    return [];
-  }
-
-  return response.data.data;
-};
-
-interface UpdateBooksPayload {
-  books: {
-    author: string;
-    pageId: string;
-    title: string;
-    isbn: string;
-  }[];
-}
-const updateBooks = async (payload: UpdateBooksPayload) => {
-  const baseUrl = config.serviceUrl;
-  const databaseId = config.notionDatabaseId;
-
-  const response: AxiosResponse<RawGetBooksResponse> = await axios.post(
-    `${baseUrl}/databases/${databaseId}/books`,
-    payload
-  );
-
-  return response.data;
-};
-
 type SelectedData = {
   [key: string]: RawGetBooksResponse["data"][0] & { selected: boolean };
 };
-export const GetBooks: React.FC = () => {
+
+export const GetBooksInfo: React.FC = () => {
   const [selectedData, setSelectedData] = useState<SelectedData | null>(null);
   const [showErrorToast, setShowErrorToast] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+
   const { isLoading, isFetching, error, data, refetch } = useQuery(
     "getBooks",
     getBooks,
@@ -70,7 +30,6 @@ export const GetBooks: React.FC = () => {
       staleTime: Infinity,
     }
   );
-  const isEmpty = data && !data.length;
 
   const { mutate, isLoading: isUpdatingBooks } = useMutation(
     "updateBooks",
@@ -88,40 +47,7 @@ export const GetBooks: React.FC = () => {
     selectedData &&
     Object.keys(selectedData).every((key) => !selectedData[key].selected);
 
-  const handleButtonClick = ({
-    allBooks,
-    selectedBooks,
-  }: {
-    allBooks: RawGetBooksResponse["data"];
-    selectedBooks: SelectedData | null;
-  }) => {
-    if (showErrorToast) {
-      setShowErrorToast(false);
-    }
-    if (!selectedBooks) {
-      return;
-    }
-    const booksToSubmit = allBooks.filter(
-      (book) => selectedBooks[book.pageId].selected
-    );
-
-    mutate({ books: booksToSubmit });
-  };
-
-  useEffect(() => {
-    if (data && data.length) {
-      const dataWithSelected = data.reduce((prev, curr) => {
-        return {
-          ...prev,
-          [curr.pageId]: {
-            ...curr,
-            selected: true,
-          },
-        };
-      }, {});
-      setSelectedData(dataWithSelected);
-    }
-  }, [data]);
+  const isEmpty = data && !data.length;
 
   const buttons: IButtonProps[] = [
     {
@@ -142,6 +68,41 @@ export const GetBooks: React.FC = () => {
       children: "go",
     },
   ];
+
+  useEffect(() => {
+    if (data && data.length) {
+      const dataWithSelected = data.reduce((prev, curr) => {
+        return {
+          ...prev,
+          [curr.pageId]: {
+            ...curr,
+            selected: true,
+          },
+        };
+      }, {});
+      setSelectedData(dataWithSelected);
+    }
+  }, [data]);
+
+  const handleButtonClick = ({
+    allBooks,
+    selectedBooks,
+  }: {
+    allBooks: RawGetBooksResponse["data"];
+    selectedBooks: SelectedData | null;
+  }) => {
+    if (showErrorToast) {
+      setShowErrorToast(false);
+    }
+    if (!selectedBooks) {
+      return;
+    }
+    const booksToSubmit = allBooks.filter(
+      (book) => selectedBooks[book.pageId].selected
+    );
+
+    mutate({ books: booksToSubmit });
+  };
 
   const getEmptyState = () => (
     <>

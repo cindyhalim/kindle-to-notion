@@ -1,11 +1,11 @@
 import React from "react";
 
-import { GetBooks } from "./book-scraper/get-books";
+import { GetBooksInfo } from "./book-scraper/get-books-info";
 
 export const Home = () => {
   return (
     <>
-      <GetBooks />
+      <GetBooksInfo />
     </>
   );
 };
