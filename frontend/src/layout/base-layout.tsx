@@ -7,19 +7,24 @@ import { theme } from "./theme";
 export const BaseLayout: React.FC<{
   title: string;
   buttons: IButtonProps[];
-  isLoading: boolean;
-  hasError: boolean;
-  isEmpty?: boolean;
-  refetch: () => void;
-}> = ({ children, title, buttons, isLoading, hasError, refetch, isEmpty }) => {
+  queryProps?: {
+    isLoading: boolean;
+    hasError?: boolean;
+    refetch?: () => void;
+    showRefetchButton?: boolean;
+  };
+}> = ({ children, title, buttons, queryProps }) => {
   const getButtons = () => {
-    if (isLoading) {
+    if (queryProps?.isLoading) {
       return null;
     }
 
-    if (hasError || isEmpty) {
+    if (queryProps?.hasError || queryProps?.showRefetchButton) {
       return (
-        <Button disabled={isLoading} onClick={() => refetch()}>
+        <Button
+          disabled={queryProps?.isLoading}
+          onClick={() => queryProps?.refetch && queryProps.refetch()}
+        >
           try again
         </Button>
       );
@@ -35,11 +40,11 @@ export const BaseLayout: React.FC<{
   };
 
   const getContent = () => {
-    if (isLoading) {
+    if (queryProps?.isLoading) {
       return <Loading width={150} height={150} isDark />;
     }
 
-    if (hasError) {
+    if (queryProps?.hasError) {
       return <Text sx={{ fontSize: 18 }}>something went wrong :(</Text>;
     }
 

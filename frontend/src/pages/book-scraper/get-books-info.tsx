@@ -5,6 +5,8 @@ import { ButtonTypeEnum, IButtonProps } from "../../components/button";
 import { ErrorToast } from "../../components/error-toast";
 import { DetailsIcon, LinkIcon } from "../../components/icons";
 import { ListCard } from "../../components/list-card";
+import { ScrollingContentWrapper } from "../../components/scrolling-content-wrapper";
+import { Success } from "../../components/success";
 import {
   getBooks,
   RawGetBooksResponse,
@@ -21,7 +23,6 @@ type SelectedData = {
 export const GetBooksInfo: React.FC = () => {
   const [selectedData, setSelectedData] = useState<SelectedData | null>(null);
   const [showErrorToast, setShowErrorToast] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
 
   const { isLoading, isFetching, error, data, refetch } = useQuery(
     "getBooks",
@@ -31,18 +32,14 @@ export const GetBooksInfo: React.FC = () => {
     }
   );
 
-  const { mutate, isLoading: isUpdatingBooks } = useMutation(
-    "updateBooks",
-    updateBooks,
-    {
-      onError: () => {
-        setShowErrorToast(true);
-      },
-      onSuccess: () => {
-        setSuccess(true);
-      },
-    }
-  );
+  const {
+    mutate,
+    isLoading: isUpdatingBooks,
+    isSuccess,
+  } = useMutation("updateBooks", updateBooks, {
+    onError: () => setShowErrorToast(true),
+  });
+
   const noneSelected =
     selectedData &&
     Object.keys(selectedData).every((key) => !selectedData[key].selected);
@@ -57,7 +54,7 @@ export const GetBooksInfo: React.FC = () => {
       children: "home",
     },
     {
-      disabled: !!noneSelected || isUpdatingBooks || success,
+      disabled: !!noneSelected || isUpdatingBooks || isSuccess,
       isLoading: isFetching,
       onClick: () => {
         if (data) {
@@ -118,43 +115,27 @@ export const GetBooksInfo: React.FC = () => {
     </>
   );
 
-  const getSuccessState = () => (
-    <>
-      <Text sx={{ fontSize: 20, marginBottom: 40 }}>{"success! 🍾"}</Text>
-      <Text sx={{ fontSize: [12, 14] }}>
-        {
-          "note: it may take some time for the updates to be reflected on notion"
-        }
-      </Text>
-    </>
-  );
-
   return (
     <BaseLayout
       title={"✨ prettify reading list ✨"}
       buttons={buttons}
-      isLoading={isLoading || isFetching}
-      hasError={isError(error) || !data}
-      isEmpty={isEmpty}
-      refetch={refetch}
+      queryProps={{
+        isLoading: isLoading || isFetching,
+        hasError: isError(error) || !data,
+        showRefetchButton: true,
+        refetch,
+      }}
     >
       <ErrorToast isVisible={showErrorToast} setIsVisible={setShowErrorToast} />
-      {success ? (
-        getSuccessState()
+      {isSuccess ? (
+        <Success />
       ) : (
         <>
           {isEmpty && getEmptyState()}
           {data && data.length && selectedData ? (
             <>
               <Legend />
-              <Box
-                sx={{
-                  maxHeight: "450px",
-                  overflowY: "auto",
-                  padding: 20,
-                  width: "100%",
-                }}
-              >
+              <ScrollingContentWrapper>
                 {data.map(
                   (
                     {
@@ -201,7 +182,7 @@ export const GetBooksInfo: React.FC = () => {
                     );
                   }
                 )}
-              </Box>
+              </ScrollingContentWrapper>
             </>
           ) : null}
         </>
