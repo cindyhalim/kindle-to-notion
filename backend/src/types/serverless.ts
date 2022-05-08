@@ -8,7 +8,15 @@ type Definition = {
 };
 
 type States = {
-  [state: string]: Choice | Fail | Map | Task | Parallel | Pass | Wait;
+  [state: string]:
+    | Choice
+    | Fail
+    | Map
+    | Task
+    | Parallel
+    | Pass
+    | Wait
+    | Succeed;
 };
 
 type StateBase = {
@@ -39,6 +47,10 @@ interface Map extends StateBase {
   Type: "Map";
   ItemsPath: string;
   Iterator: Definition;
+}
+
+interface Succeed extends StateBase {
+  Type: "Succeed";
 }
 
 type Resource =

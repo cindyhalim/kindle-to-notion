@@ -64,8 +64,11 @@ export const handlerFunctions: Serverless["functions"] = {
   onGetBookLink: {
     handler: "src/functions/onGetBookLink.handler",
   },
-  onUpdateReadingList: {
-    handler: "src/functions/onUpdateReadingList.handler",
+  onUpdateBookDetails: {
+    handler: "src/functions/onUpdateBookDetails.handler",
+  },
+  onUpdateBookLink: {
+    handler: "src/functions/onUpdateBookLink.handler",
   },
   // addToNotion: {
   //   handler: "src/functions/addToNotion.handler",
