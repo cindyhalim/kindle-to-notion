@@ -1,26 +1,22 @@
 import React from "react";
-import { Flex } from "rebass";
 import Lottie from "react-lottie";
-import animationData from "../assets/upload-loading-animation.json";
+import loadingLightAnimationData from "../assets/loading.json";
+import loadingDarkAnimationData from "../assets/loading-dark.json";
 
 export const Loading: React.FC<{
-  onLoopComplete: () => void;
-}> = ({ onLoopComplete }) => (
-  <Flex justifyContent="center" alignItems="center" minHeight="350px">
-    <Lottie
-      width={250}
-      height={250}
-      options={{
-        autoplay: true,
-
-        animationData: animationData,
-      }}
-      eventListeners={[
-        {
-          eventName: "loopComplete",
-          callback: onLoopComplete,
-        },
-      ]}
-    />
-  </Flex>
+  isDark?: boolean;
+  width?: number;
+  height?: number;
+}> = ({ isDark = false, width, height }) => (
+  <Lottie
+    width={width}
+    height={height}
+    options={{
+      autoplay: true,
+      loop: true,
+      animationData: isDark
+        ? loadingDarkAnimationData
+        : loadingLightAnimationData,
+    }}
+  />
 );

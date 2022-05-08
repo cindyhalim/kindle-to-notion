@@ -1,21 +1,21 @@
 import React from "react";
-import Lottie from "react-lottie";
 import { Button as RButton, SxStyleProp } from "rebass";
 
 import { theme } from "../layout/theme";
-import animationData from "../assets/loading.json";
+import { Loading } from "./loading";
 
 export enum ButtonTypeEnum {
   "PRIMARY" = "primary",
   "SECONDARY" = "secondary",
 }
 
-interface IButtonProps {
+export interface IButtonProps {
   type?: ButtonTypeEnum;
-  disabled: boolean;
+  disabled?: boolean;
   onClick: () => void;
   isLoading?: boolean;
   sx?: SxStyleProp;
+  children: React.ReactNode;
 }
 export const Button: React.FC<IButtonProps> = ({
   type = ButtonTypeEnum.PRIMARY,
@@ -26,12 +26,11 @@ export const Button: React.FC<IButtonProps> = ({
   children,
 }) => {
   const buttonStyles: { [key in ButtonTypeEnum]: SxStyleProp } = {
-    ["primary"]: {
+    [ButtonTypeEnum.PRIMARY]: {
       backgroundColor: theme.colors.black,
       color: theme.colors.white,
     },
-    ["secondary"]: {
-      border: `3px solid ${theme.colors.black}`,
+    [ButtonTypeEnum.SECONDARY]: {
       bg: theme.colors.white,
       color: theme.colors.black,
     },
@@ -42,31 +41,23 @@ export const Button: React.FC<IButtonProps> = ({
       disabled={isLoading || disabled}
       onClick={onClick}
       sx={{
-        width: ["100%", "100%", "50%"],
+        width: ["100%", "50%", "300px"],
         cursor: "pointer",
+        "&:hover": {
+          opacity: 0.8,
+        },
         "&:disabled": {
           cursor: "not-allowed",
           opacity: 0.4,
         },
         marginTop: 20,
+        border: `3px solid ${theme.colors.black}`,
         ...theme.text,
         ...buttonStyles[type],
         ...sx,
       }}
     >
-      {isLoading ? (
-        <Lottie
-          width={50}
-          height={25}
-          options={{
-            autoplay: true,
-            loop: true,
-            animationData: animationData,
-          }}
-        />
-      ) : (
-        children
-      )}
+      {isLoading ? <Loading width={50} height={25} /> : children}
     </RButton>
   );
 };
