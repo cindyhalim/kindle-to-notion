@@ -8,8 +8,8 @@ export const UploadLoading: React.FC<{
 }> = ({ onLoopComplete }) => (
   <Flex justifyContent="center" alignItems="center" minHeight="350px">
     <Lottie
-      width={250}
-      height={250}
+      width={150}
+      height={150}
       options={{
         autoplay: true,
 

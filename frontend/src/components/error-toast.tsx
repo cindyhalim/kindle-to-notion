@@ -31,7 +31,7 @@ export const ErrorToast: React.FC<IErrorToastProps> = ({
             }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             onAnimationComplete={() =>
-              setTimeout(() => setIsVisible(false), 3000)
+              setTimeout(() => setIsVisible(false), 4000)
             }
           >
             <Box
