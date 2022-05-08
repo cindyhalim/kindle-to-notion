@@ -1,31 +1,47 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { puppeteer } from "src/api/puppeteer";
-import { makeResultResponse } from "../libs/apiGateway";
+import { s3 } from "src/services/s3";
+import { IGetBookInfoPayload, IGetBookLinkOutput } from "src/types/functions";
 
-type GetBookLinkEvent = {
-  databaseId: string;
-  pageId: string;
-  author: string;
-  title: string;
-};
-const controller = async (event: GetBookLinkEvent) => {
-  // const { databaseId, author, title, pageId } = event;
-  // const searchInputText = `${title} ${author} epub free`.toLowerCase();
+const controller = async ({
+  title,
+  author,
+  executionName,
+}: IGetBookInfoPayload): Promise<IGetBookLinkOutput> => {
+  const searchInputText = `${title} ${author} epub free`.toLowerCase();
+  const urlParams = new URLSearchParams(searchInputText);
 
-  const { browser } = await puppeteer.launchAndGoTo({
-    link: "https://www.google.com",
+  const { browser, page } = await puppeteer.launchAndGoTo({
+    link: `https://www.google.com/search?q=${urlParams}`,
   });
 
   try {
-    // search for book
+    console.log("Searching for epub link for:", title);
+    const ePubUrls = await page.$$eval("a", (elements: HTMLAnchorElement[]) =>
+      elements
+        .map((element) => element.href)
+        .filter((link) => link && !link.includes("google.com"))
+    );
+
+    console.log(ePubUrls);
+    const ePubUrl = ePubUrls[0] ?? null;
 
     await browser.close();
-    return { ePubUrl: "" };
+
+    return { ePub: ePubUrl };
   } catch (e) {
-    console.log("Error retrieving book link", e);
-    // TODO: get screenshot of page at point of failure
+    console.log("Error retrieving book details", e);
+    const screenshot = await page.screenshot();
+    const url = await s3.uploadObject({
+      key: executionName,
+      body: screenshot,
+    });
+
     await browser.close();
+    return {
+      error: url,
+    };
   }
 };
 

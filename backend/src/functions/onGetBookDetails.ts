@@ -2,16 +2,14 @@ import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { puppeteer } from "src/api/puppeteer";
 import { s3 } from "src/services/s3";
+import {
+  IGetBookDetailsOutput,
+  IGetBookInfoPayload,
+} from "src/types/functions";
 
-type GetBookDetailsPayload = {
-  executionName: string;
-  databaseId: string;
-  pageId: string;
-  author: string;
-  title: string;
-  isbn: string;
-};
-const controller = async (input: GetBookDetailsPayload) => {
+const controller = async (
+  input: IGetBookInfoPayload
+): Promise<IGetBookDetailsOutput> => {
   const { title, executionName, isbn } = input;
 
   const { page, browser } = await puppeteer.launchAndGoTo({
@@ -31,8 +29,8 @@ const controller = async (input: GetBookDetailsPayload) => {
 
     await page.waitForNavigation();
 
-    console.log("Getting book image url");
-    const bookImageUrl = await page.$$eval('img[id="coverImage"]', (img) =>
+    console.log("Getting book cover url");
+    const coverUrl = await page.$$eval('img[id="coverImage"]', (img) =>
       img?.[0]?.getAttribute("src")
     );
 
@@ -41,21 +39,23 @@ const controller = async (input: GetBookDetailsPayload) => {
       'span[itemprop="numberOfPages"]',
       (span: HTMLSpanElement) => span?.innerText || ""
     );
+    const digitsOnlyRegex = new RegExp(/[0-9]/, "g");
+    const pages = pageCount.match(digitsOnlyRegex).join("");
 
-    console.log("Getting genres");
-    const genres = await page.$$eval(
+    console.log("Getting genre");
+    const genre = await page.$$eval(
       'div.left > a[href^="/genres/"]',
       (genres: HTMLAnchorElement[]) =>
-        genres.map((genre) => genre?.innerText).slice(0, 3)
+        genres.map((genre) => genre?.innerText?.toLowerCase()).slice(0, 3)
     );
 
     await browser.close();
 
-    console.log("Returning book details", { pageCount, genres, bookImageUrl });
+    console.log("Returning book details", { pageCount, genre, coverUrl });
     return {
-      pageCount,
-      genres,
-      imageUrl: bookImageUrl,
+      pages,
+      genre,
+      coverUrl: coverUrl,
     };
   } catch (e) {
     console.log("Error retrieving book details", e);
