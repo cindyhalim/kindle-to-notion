@@ -28,6 +28,9 @@ export const ListCard: React.FC<IListCardProps> = ({
         : `3px solid ${theme.colors.black}`,
       borderRadius: 5,
       cursor: "pointer",
+      "&:hover": {
+        opacity: 0.8,
+      },
     }}
     flexDirection={"row"}
     justifyContent={"space-between"}
