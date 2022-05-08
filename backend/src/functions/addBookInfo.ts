@@ -12,6 +12,7 @@ const stepFunctions = new StepFunctions();
 
 type AddBookInfoEventBody = {
   books: {
+    isbn: string;
     author: string;
     id: string;
     title: string;
@@ -37,6 +38,7 @@ const controller = async (
         pageId,
         author: book.author,
         title: book.title,
+        isbn: book.isbn,
       };
       stepFunctions
         .startExecution({
