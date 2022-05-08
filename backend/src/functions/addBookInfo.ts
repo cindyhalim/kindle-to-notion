@@ -14,7 +14,7 @@ type AddBookInfoEventBody = {
   books: {
     isbn: string;
     author: string;
-    id: string;
+    pageId: string;
     title: string;
   }[];
 };
@@ -30,7 +30,7 @@ const controller = async (
 
   try {
     const stateExecutions = books.map((book) => {
-      const pageId = book.id;
+      const pageId = book.pageId;
       const executionName = `${pageId}_${uuidv4()}`;
       const stepFunctionInput = {
         executionName,
