@@ -42,7 +42,7 @@ export const UploadClippingsToNotion: React.FC = () => {
   return (
     <Flex flexDirection={"column"}>
       <Text sx={{ ...theme.title, marginBottom: 20 }}>kindle to notion</Text>
-      <ErrorToast isVisible={hasError} />
+      <ErrorToast isVisible={hasError} setIsVisible={() => null} />
       <DragAndDropZone
         reset={isReset}
         onError={() => {

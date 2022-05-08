@@ -6,7 +6,7 @@ import {
   IFormattedClipping,
   parseRawClippingData,
 } from "../utils";
-import { Loading } from "./loading";
+import { UploadLoading } from "./upload-loading";
 
 interface IProps {
   reset: boolean;
@@ -81,7 +81,7 @@ export const DragAndDropZone: React.FC<IProps> = ({
   };
 
   if (isLoading) {
-    return <Loading onLoopComplete={() => setIsLoading(false)} />;
+    return <UploadLoading onLoopComplete={() => setIsLoading(false)} />;
   }
 
   const dragAndDropProps: BoxProps = {
