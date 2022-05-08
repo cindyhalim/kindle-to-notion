@@ -44,7 +44,7 @@ export const Button: React.FC<IButtonProps> = ({
         width: ["100%", "50%", "300px"],
         cursor: "pointer",
         "&:hover": {
-          opacity: 0.8,
+          opacity: 0.6,
         },
         "&:disabled": {
           cursor: "not-allowed",
