@@ -1,6 +1,6 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { puppeteer } from "src/api/puppeteer";
+import { puppeteer } from "@libs/puppeteer";
 import { s3 } from "src/services/s3";
 import {
   IGetBookDetailsOutput,
