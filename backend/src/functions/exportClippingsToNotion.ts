@@ -34,13 +34,16 @@ const controller = async (
   console.log("Retrieving pages");
   const { pages: rawPages } = await notion.getPages<RawReadingListProperties>({
     databaseId,
+    filter: null,
   });
 
   const pages = rawPages.map((page) => ({
     id: page.id,
-    title: (page?.properties?.title?.title?.[0].plain_text ?? "").toLowerCase(),
+    title: (
+      page?.properties?.title?.title?.[0]?.text?.content ?? ""
+    ).toLowerCase(),
     author: (
-      page?.properties?.author?.rich_text?.[0].plain_text ?? ""
+      page?.properties?.author?.rich_text?.[0]?.text?.content ?? ""
     ).toLowerCase(),
   }));
 

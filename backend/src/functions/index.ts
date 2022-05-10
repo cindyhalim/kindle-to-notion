@@ -79,6 +79,7 @@ export const handlerFunctions: Serverless["functions"] = {
         http: {
           method: "post",
           path: `/databases/{databaseId}/clippings/export`,
+          cors: true,
           request: {
             parameters: {
               paths: {

@@ -10,6 +10,7 @@ export enum Properties {
   MULTI_SELECT = "multi_select",
   FILES = "files",
   URL = "url",
+  TITLE = "title",
 }
 
 export interface NotionPropertyData<T> {
@@ -26,6 +27,17 @@ const formatToNotionPropeties = (type: Properties, data: any) => {
   };
 
   switch (type) {
+    case Properties.TITLE:
+      return {
+        [Properties.TITLE]: [
+          {
+            type: "text",
+            text: {
+              content: data,
+            },
+          },
+        ],
+      };
     case Properties.RICH_TEXT:
       return {
         [Properties.RICH_TEXT]: [
@@ -137,18 +149,18 @@ type RawDatabaseQueryPageResult<T> = RawDatabaseQueryGenericPageResult & {
 
 const getPages = async <T extends unknown>(params: {
   databaseId: string;
-  filter?: Filter<T>;
+  filter: Filter<T>;
 }): Promise<{
   pages: RawDatabaseQueryPageResult<T>[];
 }> => {
-  const { databaseId, filter } = params;
+  const { databaseId } = params;
   try {
-    const filterOptions = {
-      filter: transformFilterToNotion<T>(filter),
-    } as Record<string, unknown>;
     const response = await client.databases.query({
       database_id: databaseId,
-      ...(filter && filterOptions),
+      ...(params.filter &&
+        ({
+          filter: transformFilterToNotion<T>(params.filter),
+        } as Record<string, unknown>)),
     });
     const pages = response?.results as RawDatabaseQueryPageResult<T>[];
 
@@ -176,7 +188,9 @@ const addPage = async <T>(params: {
 
   try {
     const propertiesBody = properties.reduce((prev, curr) => {
+      console.log("hii curr", curr);
       const propertyType = propertiesMap[curr.key].type;
+      console.log("hii property type", propertyType);
       const content = formatToNotionPropeties(propertyType, curr.value);
 
       if (content) {
@@ -215,7 +229,6 @@ const addClippingsToPage = async (params: {
 
   const bulletedListItemBlocks: any = payload.map((item) => {
     return {
-      synced_block: "",
       object: "block",
       has_children: false,
       type: "bulleted_list_item",
