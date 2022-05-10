@@ -7,10 +7,7 @@ import { UploadLoading } from "./upload-loading";
 
 interface IDragAndDropZoneProps {
   validate: (file: File) => boolean;
-  children: (props: {
-    loading: boolean;
-    data: File | null;
-  }) => JSX.Element | null;
+  children: (props: { data: File | null }) => JSX.Element | null;
 }
 type TDragEvent = React.DragEvent<HTMLDivElement>;
 
@@ -84,13 +81,13 @@ export const DragAndDropZone: React.FC<IDragAndDropZoneProps> = ({
           ...(isDragging && onDragSx),
         }}
       >
-        {isLoading && (
+        {isLoading ? (
           <UploadLoading onLoopComplete={() => setIsLoading(false)} />
+        ) : (
+          children({
+            data,
+          })
         )}
-        {children({
-          data,
-          loading: isLoading,
-        })}
       </Box>
     </>
   );

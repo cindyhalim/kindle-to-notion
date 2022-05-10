@@ -98,35 +98,31 @@ export const UploadClippingsToNotion: React.FC = () => {
         </ScrollingContentWrapper>
       ) : (
         <DragAndDropZone validate={handleValidation}>
-          {({ loading, data: fileData }) => {
-            if (!loading) {
-              if (!fileData) {
-                return getEmptyState();
-              }
-
-              if (fileData) {
-                const reader = new FileReader();
-                reader.readAsText(fileData);
-                reader.onload = () => {
-                  const result = reader.result;
-
-                  if (result) {
-                    const parsedClippingData = parseRawClippingData(result);
-                    const formattedParsedData =
-                      formatParsedClippings(parsedClippingData);
-
-                    setData(formattedParsedData);
-
-                    // select all items
-                    const allSelected = formattedParsedData.reduce(
-                      (prev, _, idx) => ({ ...prev, [idx]: true }),
-                      {}
-                    );
-                    setSelected(allSelected);
-                  }
-                };
-              }
+          {({ data: fileData }) => {
+            if (!fileData) {
+              return getEmptyState();
             }
+
+            const reader = new FileReader();
+            reader.readAsText(fileData);
+            reader.onload = () => {
+              const result = reader.result;
+
+              if (result) {
+                const parsedClippingData = parseRawClippingData(result);
+                const formattedParsedData =
+                  formatParsedClippings(parsedClippingData);
+
+                setData(formattedParsedData);
+
+                // select all items
+                const allSelected = formattedParsedData.reduce(
+                  (prev, _, idx) => ({ ...prev, [idx]: true }),
+                  {}
+                );
+                setSelected(allSelected);
+              }
+            };
 
             return null;
           }}
