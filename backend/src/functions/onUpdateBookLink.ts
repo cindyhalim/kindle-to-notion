@@ -15,17 +15,17 @@ interface IUpdateBookLinkEvent extends IGetBookInfoPayload {
 const controller = async (event: IUpdateBookLinkEvent) => {
   const { pageId, url } = event;
 
-  const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
-    ...(url.ePub && [
-      {
-        propertyName: "epub link" as const,
-        propertyType: Properties.URL,
-        data: url.ePub,
-      },
-    ]),
-  ];
-
   try {
+    const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
+      ...(url.ePub && [
+        {
+          propertyName: "epub link" as const,
+          propertyType: Properties.URL,
+          data: url.ePub,
+        },
+      ]),
+    ];
+
     const response =
       await notion.updatePageProperties<RawReadingListProperties>({
         pageId,

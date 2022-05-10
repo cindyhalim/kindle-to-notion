@@ -34,6 +34,12 @@ const controller = async ({
 
     await browser.close();
 
+    if (!ePubUrl) {
+      return {
+        status: `ReturnEarly: no epub url found`,
+      };
+    }
+
     return { ePub: ePubUrl };
   } catch (e) {
     console.log("Error retrieving book link", e);

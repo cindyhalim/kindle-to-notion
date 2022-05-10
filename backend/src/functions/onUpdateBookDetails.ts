@@ -15,31 +15,30 @@ interface IUpdateBookDetailsEvent extends IGetBookInfoPayload {
 const controller = async (event: IUpdateBookDetailsEvent) => {
   const { pageId, details } = event;
 
-  const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
-    ...(details.genre.length && [
-      {
-        propertyName: "genre" as const,
-        propertyType: Properties.MULTI_SELECT,
-        data: details.genre,
-      },
-    ]),
-    ...(details.coverUrl && [
-      {
-        propertyName: "book cover" as const,
-        propertyType: Properties.FILES,
-        data: details.coverUrl,
-      },
-    ]),
-    ...(details.pages && [
-      {
-        propertyName: "pages" as const,
-        propertyType: Properties.RICH_TEXT,
-        data: details.pages,
-      },
-    ]),
-  ];
-
   try {
+    const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
+      ...(details.genre.length && [
+        {
+          propertyName: "genre" as const,
+          propertyType: Properties.MULTI_SELECT,
+          data: details.genre,
+        },
+      ]),
+      ...(details.coverUrl && [
+        {
+          propertyName: "book cover" as const,
+          propertyType: Properties.FILES,
+          data: details.coverUrl,
+        },
+      ]),
+      ...(details.pages && [
+        {
+          propertyName: "pages" as const,
+          propertyType: Properties.RICH_TEXT,
+          data: details.pages,
+        },
+      ]),
+    ];
     const response =
       await notion.updatePageProperties<RawReadingListProperties>({
         pageId,
