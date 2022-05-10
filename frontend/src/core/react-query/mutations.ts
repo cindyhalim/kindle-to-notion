@@ -18,9 +18,12 @@ export const updateBooks = async (payload: UpdateBooksPayload) => {
 export const exportClippingsToNotion = async (
   payload: IFormattedClipping[]
 ) => {
-  const response = await axios.post(`${baseUrl}/databases/${databaseId}`, {
-    payload,
-  });
+  const response = await axios.post(
+    `${baseUrl}/databases/${databaseId}/clippings/export`,
+    {
+      payload,
+    }
+  );
 
   return response.data;
 };

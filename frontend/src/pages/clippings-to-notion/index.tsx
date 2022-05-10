@@ -49,7 +49,7 @@ export const UploadClippingsToNotion: React.FC = () => {
       type: ButtonTypeEnum.SECONDARY,
     },
     {
-      disabled: noneSelected || isLoading,
+      disabled: noneSelected || isLoading || isSuccess,
       isLoading,
       onClick: handleExport,
       children: "export",

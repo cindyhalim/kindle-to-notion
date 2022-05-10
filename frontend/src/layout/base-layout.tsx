@@ -11,7 +11,7 @@ export const BaseLayout: React.FC<{
     isLoading: boolean;
     hasError?: boolean;
     refetch?: () => void;
-    showRefetchButton?: boolean;
+    isEmpty?: boolean;
   };
 }> = ({ children, title, buttons, queryProps }) => {
   const getButtons = () => {
@@ -19,7 +19,7 @@ export const BaseLayout: React.FC<{
       return null;
     }
 
-    if (queryProps?.hasError || queryProps?.showRefetchButton) {
+    if (queryProps?.hasError || queryProps?.isEmpty) {
       return (
         <Button
           disabled={queryProps?.isLoading}

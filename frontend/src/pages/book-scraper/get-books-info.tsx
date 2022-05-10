@@ -122,7 +122,7 @@ export const GetBooksInfo: React.FC = () => {
       queryProps={{
         isLoading: isLoading || isFetching,
         hasError: isError(error) || !data,
-        showRefetchButton: true,
+        isEmpty,
         refetch,
       }}
     >
