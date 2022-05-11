@@ -5,7 +5,7 @@ import { theme } from "../layout/theme";
 interface IListCardProps {
   title: string;
   subtitle: string;
-  rightComponent: React.ReactElement;
+  rightComponent?: React.ReactElement;
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -37,9 +37,9 @@ export const ListCard: React.FC<IListCardProps> = ({
     alignItems={"center"}
   >
     <Flex flexDirection="column">
-      <Text>{title}</Text>
+      <Text sx={{ ...theme.text }}>{title}</Text>
       <Text sx={{ fontSize: 10 }}>{subtitle}</Text>
     </Flex>
-    {rightComponent}
+    {rightComponent ?? null}
   </Flex>
 );
