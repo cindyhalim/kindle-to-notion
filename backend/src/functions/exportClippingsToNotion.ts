@@ -52,7 +52,9 @@ const controller = async (
     const payloadAuthor = item.author.toLowerCase();
     console.log(`Finding page for ${item.title} - ${item.author}`);
     const page = pages.find(
-      ({ title, author }) => payloadTitle === title && payloadAuthor === author
+      ({ title, author }) =>
+        payloadTitle === title.toLowerCase() &&
+        payloadAuthor === author.toLowerCase()
     );
     let pageId = page?.id || "";
 
