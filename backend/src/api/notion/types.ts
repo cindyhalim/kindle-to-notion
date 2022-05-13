@@ -115,3 +115,29 @@ export type RawReadingListProperties = {
     }[];
   };
 };
+
+export type RawEmailListProperties = {
+  value: {
+    id: "Fcgt";
+    type: "rich_text";
+    rich_text: {
+      type: "text";
+      text: {
+        content: string;
+        link: null;
+      };
+    }[];
+  };
+  key: {
+    id: "title";
+    type: "title";
+    title: {
+      type: "text";
+      text: {
+        content: string;
+        link: null;
+      };
+      plain_text: string;
+    }[];
+  };
+};

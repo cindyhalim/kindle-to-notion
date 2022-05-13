@@ -91,4 +91,23 @@ export const handlerFunctions: Serverless["functions"] = {
       },
     ],
   },
+  sendEPubToKindle: {
+    handler: "src/functions/sendEPubToKindle.handler",
+    events: [
+      {
+        http: {
+          method: "post",
+          path: `/databases/{databaseId}/kindle/`,
+          cors: true,
+          request: {
+            parameters: {
+              paths: {
+                databaseId: true,
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
 };
