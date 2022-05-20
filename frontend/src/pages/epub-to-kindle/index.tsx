@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import { useMutation } from "react-query";
+import { v4 as uuidv4 } from "uuid";
 import { Text } from "rebass";
-import { ButtonTypeEnum, IButtonProps } from "../../components/button";
 
+import { ButtonTypeEnum, IButtonProps } from "../../components/button";
 import { DragAndDropZone } from "../../components/drag-and-drop-zone";
 import { ListCard } from "../../components/list-card";
 import { ScrollingContentWrapper } from "../../components/scrolling-content-wrapper";
+import {
+  createUploadUrl as createUploadUrlFn,
+  uploadFile as uploadFileFn,
+  sendToKindle as sendToKindleFn,
+} from "../../core/react-query";
 import { BaseLayout } from "../../layout/base-layout";
 import { theme } from "../../layout/theme";
 
@@ -13,6 +20,21 @@ const SIZE_LIMIT_MB = 50;
 
 export const EPubToKindle: React.FC = () => {
   const [ePub, setEPub] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const { mutateAsync: createUploadUrl } = useMutation(
+    "createUploadUrl",
+    createUploadUrlFn
+  );
+  const { mutateAsync: uploadFile } = useMutation("uploadFile", uploadFileFn);
+  const { mutateAsync: sendToKindle, isSuccess } = useMutation(
+    "sendToKindle",
+    sendToKindleFn,
+    {
+      onError: () => {
+        setIsUploading(false);
+      },
+    }
+  );
 
   const validateFile = (file: File) => {
     if (file.type !== "application/epub+zip") {
@@ -35,10 +57,21 @@ export const EPubToKindle: React.FC = () => {
       type: ButtonTypeEnum.SECONDARY,
     },
     {
-      disabled: false,
-      // disabled: isLoading || isSuccess,
-      // isLoading,
-      onClick: () => {},
+      disabled: isUploading || isSuccess,
+      isLoading: isUploading,
+      onClick: async () => {
+        setIsUploading(true);
+        const key = `${uuidv4()}.epub`;
+        const response = await createUploadUrl({ key });
+
+        console.log(response);
+
+        await uploadFile({ url: response.url, file: ePub });
+
+        await sendToKindle({ uploadKey: key });
+
+        setIsUploading(false);
+      },
       children: "send to kindle",
     },
   ];
