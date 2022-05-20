@@ -40,7 +40,14 @@ export const AuthRedirect = () => {
   }
 
   return (
-    <Flex justifyContent={"center"} alignItems={"center"}>
+    <Flex
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100%",
+      }}
+    >
       <Loading isDark width={150} height={150} />
     </Flex>
   );
