@@ -10,6 +10,16 @@ import {
 const baseUrl = config.serviceUrl;
 const databaseId = config.notionDatabaseId;
 
+export const authenticate = async ({ code }: { code: string }) => {
+  const payload = { code };
+  const response: AxiosResponse<{ accessToken: string }> = await axios.post(
+    `${baseUrl}/authenticate`,
+    payload
+  );
+
+  return response.data;
+};
+
 export const updateBooks = async (payload: UpdateBooksPayload) => {
   const response: AxiosResponse<RawGetBooksResponse> = await axios.post(
     `${baseUrl}/databases/${databaseId}/books`,
