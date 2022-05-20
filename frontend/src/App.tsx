@@ -14,15 +14,11 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route
-              path="terms-and-conditions"
-              element={<TermsAndConditions />}
-            />
-            <Route path="privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="how-to" element={<></>} />
-            <Route path="redirect" element={<AuthRedirect />} />
-          </Route>
+          <Route path="/" element={<Home />} />
+          <Route path="terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="how-to" element={<></>} />
+          <Route path="redirect" element={<AuthRedirect />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
