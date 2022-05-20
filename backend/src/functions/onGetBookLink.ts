@@ -45,7 +45,7 @@ const controller = async ({
     console.log("Error retrieving book link", e);
     const screenshot = await page.screenshot();
     const url = await s3.uploadObject({
-      key: executionName,
+      key: `screenshots/${executionName}.jpeg`,
       body: screenshot,
     });
 
