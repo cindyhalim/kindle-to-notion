@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useMutation } from "react-query";
 import { authenticate } from "../core/react-query";
 
@@ -11,22 +11,25 @@ export const AuthRedirect = () => {
 
   const showError = error || isError || !code;
 
-  const getAccessToken = async (code: string) => {
-    const response = await mutateAsync({ code });
+  const getAccessToken = useCallback(
+    async (code: string) => {
+      const response = await mutateAsync({ code });
 
-    console.log("hii access token", response.accessToken);
+      console.log("hii access token", response.accessToken);
 
-    // store this somewhere
-    // navigate to main app on success
+      // store this somewhere
+      // navigate to main app on success
 
-    return response.accessToken;
-  };
+      return response.accessToken;
+    },
+    [mutateAsync]
+  );
 
   useEffect(() => {
     if (!error && code) {
       getAccessToken(code);
     }
-  }, []);
+  }, [code, error, getAccessToken]);
 
   if (showError) {
     return <>ERROR!</>;
