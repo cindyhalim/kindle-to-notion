@@ -8,7 +8,7 @@ const NOTION_AUTHORIZATION_BASE_URL =
 export const Home = () => {
   const urlParams = new URLSearchParams({
     client_id: config.notionClientId,
-    redirect_uri: "https://google.com",
+    redirect_uri: "https://notion-kindle.netlify.app/redirect",
     response_type: "code",
     owner: "user",
   });
