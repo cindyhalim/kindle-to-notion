@@ -1,23 +1,17 @@
 import React from "react";
-import { config } from "../environment";
+import { useAuth } from "../core/auth/hooks";
+import { getNotionAuthorizationUrl } from "../core/auth/utils";
 import { BaseLayout } from "../layout/base-layout";
 
-const NOTION_AUTHORIZATION_BASE_URL =
-  "https://api.notion.com/v1/oauth/authorize";
-
 export const Home = () => {
-  const urlParams = new URLSearchParams({
-    client_id: config.notionClientId,
-    redirect_uri: "https://notion-kindle.netlify.app/redirect",
-    response_type: "code",
-    owner: "user",
-  });
+  const { isAuthenticated } = useAuth();
+  const notionAuthorizeUrl = getNotionAuthorizationUrl();
 
-  const notionAuthorizeUrl = `${NOTION_AUTHORIZATION_BASE_URL}?${urlParams.toString()}`;
-
-  return (
-    <BaseLayout title="welcome to notion <-> kindle" buttons={[]}>
+  return !isAuthenticated ? (
+    <BaseLayout title="notion <> kindle" buttons={[]}>
       <a href={notionAuthorizeUrl}>connect notion</a>
     </BaseLayout>
+  ) : (
+    <>AUTHENTICATED!</>
   );
 };

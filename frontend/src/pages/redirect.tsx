@@ -1,8 +1,14 @@
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { Flex } from "rebass";
+import { Loading } from "../components/loading";
+import { ACCESS_TOKEN_KEY } from "../core/auth/constants";
 import { authenticate } from "../core/react-query";
+import { Routes } from "../core/router/routes";
 
 export const AuthRedirect = () => {
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get("code");
   const error = urlParams.get("error");
@@ -15,14 +21,12 @@ export const AuthRedirect = () => {
     async (code: string) => {
       const response = await mutateAsync({ code });
 
-      console.log("hii access token", response.accessToken);
-
-      // store this somewhere
-      // navigate to main app on success
-
-      return response.accessToken;
+      if (response.accessToken) {
+        sessionStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+        navigate(Routes.HOME);
+      }
     },
-    [mutateAsync]
+    [mutateAsync, navigate]
   );
 
   useEffect(() => {
@@ -35,5 +39,9 @@ export const AuthRedirect = () => {
     return <>ERROR!</>;
   }
 
-  return <>SUCCESS</>;
+  return (
+    <Flex justifyContent={"center"} alignItems={"center"}>
+      <Loading isDark width={150} height={150} />
+    </Flex>
+  );
 };
