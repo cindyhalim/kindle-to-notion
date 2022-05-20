@@ -1,27 +1,26 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { RawEmailListProperties } from "src/api/notion/types";
+import { s3 } from "src/services/s3";
 import { notion } from "../api/notion";
 import {
   makeResultResponse,
   ValidatedAPIGatewayProxyEvent,
 } from "../libs/apiGateway";
-
-export interface ISendEPubToKindlePayload {
-  files: File[];
-}
+import { mailer } from "@libs/mailer";
 
 const controller = async (
   event: ValidatedAPIGatewayProxyEvent<{
-    payload: ISendEPubToKindlePayload;
+    uploadKey: string;
   }>
 ) => {
   const { databaseId } = event.pathParameters;
-  const { payload } = event.body;
 
-  if (!payload) {
+  if (!event.body) {
     throw new Error("Missing payload");
   }
+
+  const { uploadKey } = event.body;
 
   console.log("Retrieving email page");
 
@@ -46,13 +45,25 @@ const controller = async (
     throw new Error("Cannot send with missing email(s)");
   }
 
-  // create email
+  // get file from s3
+  const file = (await s3.getObject({
+    key: uploadKey,
+  })) as Buffer;
 
-  // can send up to 25 attachments in one email*
+  // TODO: fix attachments not being recognized by kindle
+  try {
+    await mailer.send({
+      fromEmail: amazonEmail,
+      toEmail: kindleEmail,
+      fileName: uploadKey,
+      file,
+    });
+  } catch (e) {
+    console.log("Error sending email", e);
+  }
 
-  // total size of 50 mb or less*
+  s3.deleteObject({ key: uploadKey });
 
-  // might need to type convert in subject line to convert document into kindle format*
   return makeResultResponse({ success: true });
 };
 

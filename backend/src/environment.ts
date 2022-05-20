@@ -8,4 +8,6 @@ export const config = {
     .get("KINDLE_NOTION_BUCKET_NAME")
     .required()
     .asString(),
+  mailerEmail: env.get("MAILER_EMAIL").required().asString(),
+  mailerPassword: env.get("MAILER_PASSWORD").required().asString(),
 };

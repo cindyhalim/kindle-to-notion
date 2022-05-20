@@ -31,6 +31,8 @@ const serverlessConfiguration: Serverless = {
       NOTION_TOKEN: "${ssm:/kindle-to-notion/notion-token}",
       CLIENT_URL: "https://master.djab0vgbepgeq.amplifyapp.com",
       KINDLE_NOTION_BUCKET_NAME: "${self:service.name}-${self:provider.stage}",
+      MAILER_EMAIL: "${ssm:/kindle-to-notion/transporter-email}",
+      MAILER_PASSWORD: "${ssm:/kindle-to-notion/transporter-password}",
     },
     iamRoleStatements: [
       {

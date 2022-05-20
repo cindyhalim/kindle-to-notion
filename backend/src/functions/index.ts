@@ -91,6 +91,25 @@ export const handlerFunctions: Serverless["functions"] = {
       },
     ],
   },
+  createPresignedUrl: {
+    handler: "src/functions/createPresignedUrl.handler",
+    events: [
+      {
+        http: {
+          method: "post",
+          path: `databases/{databaseId}/presigned-url`,
+          cors: true,
+          request: {
+            parameters: {
+              paths: {
+                databaseId: true,
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
   sendEPubToKindle: {
     handler: "src/functions/sendEPubToKindle.handler",
     events: [
