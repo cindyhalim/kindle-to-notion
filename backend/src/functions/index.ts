@@ -12,6 +12,18 @@ export const handlerFunctions: Serverless["functions"] = {
       },
     ],
   },
+  authenticate: {
+    handler: "src/functions/authenticate.handler",
+    events: [
+      {
+        http: {
+          method: "post",
+          path: "/authenticate",
+          cors: true,
+        },
+      },
+    ],
+  },
   getBooksWithMissingInfo: {
     handler: "src/functions/getBooksWithMissingInfo.handler",
     events: [
