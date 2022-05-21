@@ -39,15 +39,15 @@ const AuthenticatedHomeContent = () => {
   const features: IFeatures[] = [
     {
       text: "> scrape reading list",
-      route: "/prettify",
+      route: "prettify",
     },
     {
       text: "> epub to kindle",
-      route: "/epub-to-kindle",
+      route: "epub-to-kindle",
     },
     {
       text: "> upload kindle clippings to notion",
-      route: "/clippings-to-notion",
+      route: "clippings-to-notion",
     },
   ];
 
@@ -65,7 +65,7 @@ const AuthenticatedHomeContent = () => {
             fontSize: 20,
             cursor: "pointer",
           }}
-          onClick={() => navigate(feature.route)}
+          onClick={() => navigate(feature.route, { replace: true })}
         >
           {feature.text}
         </Text>
@@ -76,7 +76,6 @@ const AuthenticatedHomeContent = () => {
 
 export const Home = () => {
   const { isAuthenticated } = useAuth();
-
   return (
     <Flex
       sx={{
