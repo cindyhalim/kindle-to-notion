@@ -2,8 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Flex, Text } from "rebass";
 import { Button } from "../components/button";
-import { useAuth } from "../core/auth/hooks";
-import { getNotionAuthorizationUrl } from "../core/auth/utils";
+import { getAuth, getNotionAuthorizationUrl } from "../core/auth/utils";
 import { theme } from "../layout/theme";
 
 const UnauthenticatedHomeContent = () => {
@@ -75,7 +74,7 @@ const AuthenticatedHomeContent = () => {
 };
 
 export const Home = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = getAuth();
   return (
     <Flex
       sx={{

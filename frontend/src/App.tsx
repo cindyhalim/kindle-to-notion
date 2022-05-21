@@ -7,15 +7,15 @@ import { TermsAndConditions } from "./pages/terms-and-conditions";
 import { PrivacyPolicy } from "./pages/privacy-policy";
 import { AuthRedirect } from "./pages/redirect";
 import { ProtectedRoute } from "./core/router/components/protected-route";
-import { useAuth } from "./core/auth/hooks";
 import { GetBooksInfo } from "./pages/book-scraper/get-books-info";
 import { EPubToKindle } from "./pages/epub-to-kindle";
 import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
+import { getAuth } from "./core/auth/utils";
 
 const queryClient = new QueryClient();
 
 export const App: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = getAuth();
 
   return (
     <QueryClientProvider client={queryClient}>

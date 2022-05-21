@@ -12,3 +12,9 @@ export const getNotionAuthorizationUrl = () => {
   const notionAuthorizeUrl = `${NOTION_AUTHORIZATION_BASE_URL}?${urlParams.toString()}`;
   return notionAuthorizeUrl;
 };
+
+export const getAuth = () => {
+  const accessToken = sessionStorage.getItem("accessToken");
+
+  return { isAuthenticated: Boolean(accessToken), accessToken };
+};
