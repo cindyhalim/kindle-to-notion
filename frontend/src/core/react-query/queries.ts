@@ -4,9 +4,8 @@ import { RawGetBooksResponse } from "./types";
 
 export const getBooks = async () => {
   const baseUrl = config.serviceUrl;
-  const databaseId = config.notionDatabaseId;
   const response: AxiosResponse<RawGetBooksResponse> = await axios.get(
-    `${baseUrl}/databases/${databaseId}/books`
+    `${baseUrl}/read-list`
   );
 
   if (!response.data) {
