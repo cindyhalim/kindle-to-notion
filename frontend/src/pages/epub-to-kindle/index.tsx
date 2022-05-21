@@ -64,8 +64,6 @@ export const EPubToKindle: React.FC = () => {
         const key = `${uuidv4()}.epub`;
         const response = await createUploadUrl({ key });
 
-        console.log(response);
-
         await uploadFile({ url: response.url, file: ePub });
 
         await sendToKindle({ uploadKey: key });

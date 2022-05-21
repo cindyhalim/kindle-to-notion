@@ -63,6 +63,6 @@ export const uploadFile = async ({
   if (!file) {
     return;
   }
-
-  return await axios.put(url, file);
+  const uninterceptedAxiosInstance = axios.create();
+  return await uninterceptedAxiosInstance.put(url, file);
 };
