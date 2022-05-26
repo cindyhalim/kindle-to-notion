@@ -118,7 +118,7 @@ export const GetBooksInfo: React.FC = () => {
   return (
     <BaseLayout
       title={"✨ prettify reading list ✨"}
-      buttons={buttons}
+      buttons={isSuccess ? [] : buttons}
       queryProps={{
         isLoading: isLoading || isFetching,
         hasError: isError(error) || !data,

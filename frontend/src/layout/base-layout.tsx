@@ -80,7 +80,7 @@ export const BaseLayout: React.FC<{
       <Flex
         sx={{
           width: ["100%", "100%", "600px"],
-          justifyContent: ["center", "center", "space-between"],
+          justifyContent: "center",
         }}
       >
         {getButtons()}
