@@ -7,7 +7,7 @@ import { TermsAndConditions } from "./pages/terms-and-conditions";
 import { PrivacyPolicy } from "./pages/privacy-policy";
 import { AuthRedirect } from "./pages/redirect";
 import { ProtectedRoute } from "./core/router/components/protected-route";
-import { GetBooksInfo } from "./pages/book-scraper/get-books-info";
+import { GetBooksInfo } from "./pages/prettify";
 import { EPubToKindle } from "./pages/epub-to-kindle";
 import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
 import { getAuth } from "./core/auth/utils";
