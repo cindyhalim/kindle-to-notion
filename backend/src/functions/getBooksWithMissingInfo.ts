@@ -1,21 +1,24 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayEvent, Context } from "aws-lambda";
 import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
 import { RawReadingListProperties } from "src/api/notion/types";
-import { notion } from "../api/notion";
+import { authorizerMiddleware } from "src/middlewares/authorizer";
+import { getReadListDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
+import Notion from "../api/notion";
 import { makeResultResponse } from "../libs/apiGateway";
 
-const controller = async (event: APIGatewayEvent) => {
-  if (!event.pathParameters.databaseId) {
-    throw new Error("Missing database ID");
-  }
-
-  const { databaseId } = event.pathParameters;
-
+const controller = async (
+  _event: APIGatewayEvent,
+  context: Context & { accessToken: string; readListId: string }
+) => {
   try {
+    const { accessToken, readListId: databaseId } = context;
+
     console.log("Retrieving books with missing fields");
-    const { pages } = await notion.getPages<RawReadingListProperties>({
+    const { pages } = await new Notion({
+      accessToken,
+    }).getPages<RawReadingListProperties>({
       databaseId,
       filter: {
         operator: "or",
@@ -55,4 +58,7 @@ const controller = async (event: APIGatewayEvent) => {
   }
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const handler = middy(controller)
+  .use(jsonBodyParser())
+  .use(authorizerMiddleware())
+  .use(getReadListDatabaseIdMiddleware());

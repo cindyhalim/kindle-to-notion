@@ -6,6 +6,15 @@ export const kindleNotionBucket: AWS["resources"]["Resources"] = {
     Properties: {
       BucketName: "${self:provider.environment.KINDLE_NOTION_BUCKET_NAME}",
       AccessControl: "PublicRead",
+      CorsConfiguration: {
+        CorsRules: [
+          {
+            AllowedHeaders: ["*"],
+            AllowedMethods: ["PUT"],
+            AllowedOrigins: ["https://notion-kindle.netlify.app"],
+          },
+        ],
+      },
     },
   },
 };

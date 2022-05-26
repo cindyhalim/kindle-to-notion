@@ -1,5 +1,5 @@
-export type RawDatabaseQueryGenericPageResult = {
-  object: "page";
+export type RawDatabaseQueryGenericResult = {
+  object: "database" | "page";
   id: string;
   created_time: string;
   last_edited_time: string;
@@ -141,3 +141,42 @@ export type RawEmailListProperties = {
     }[];
   };
 };
+
+export enum Properties {
+  RICH_TEXT = "rich_text",
+  MULTI_SELECT = "multi_select",
+  FILES = "files",
+  URL = "url",
+  TITLE = "title",
+}
+
+export interface NotionPropertyData<T> {
+  propertyType: Properties;
+  propertyName: keyof T;
+  data: unknown;
+}
+
+type NotionFilterOperator = "and" | "or";
+export type Filter<T> = {
+  propertiesMap: Record<keyof T, any>;
+  operator: NotionFilterOperator;
+  values: { property: keyof T; value: boolean }[];
+};
+
+export type NotionFilter<T> = {
+  [key: string]: {
+    property: keyof T;
+    checkbox: {
+      equals: boolean;
+    };
+  }[];
+};
+
+export type RawDatabaseQueryPageResult<T> = RawDatabaseQueryGenericResult & {
+  properties: T;
+};
+
+export interface IAddClippingsToPagePayload {
+  quote: string;
+  info: string;
+}

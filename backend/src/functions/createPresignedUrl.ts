@@ -1,5 +1,6 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
+import { authorizerMiddleware } from "src/middlewares/authorizer";
 import { s3 } from "src/services/s3";
 
 import {
@@ -21,4 +22,6 @@ const controller = async (
   return makeResultResponse({ url });
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const handler = middy(controller)
+  .use(jsonBodyParser())
+  .use(authorizerMiddleware());

@@ -30,15 +30,8 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "get",
-          path: `/databases/{databaseId}/books`,
+          path: `/read-list`,
           cors: true,
-          request: {
-            parameters: {
-              paths: {
-                databaseId: true,
-              },
-            },
-          },
         },
       },
     ],
@@ -59,15 +52,8 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/databases/{databaseId}/books`,
+          path: `/read-list`,
           cors: true,
-          request: {
-            parameters: {
-              paths: {
-                databaseId: true,
-              },
-            },
-          },
         },
       },
     ],
@@ -90,15 +76,8 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/databases/{databaseId}/clippings/export`,
+          path: `/clippings/export`,
           cors: true,
-          request: {
-            parameters: {
-              paths: {
-                databaseId: true,
-              },
-            },
-          },
         },
       },
     ],
@@ -109,15 +88,8 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `databases/{databaseId}/presigned-url`,
+          path: `/presigned-url`,
           cors: true,
-          request: {
-            parameters: {
-              paths: {
-                databaseId: true,
-              },
-            },
-          },
         },
       },
     ],
@@ -128,15 +100,8 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/databases/{databaseId}/kindle/`,
+          path: `/kindle`,
           cors: true,
-          request: {
-            parameters: {
-              paths: {
-                databaseId: true,
-              },
-            },
-          },
         },
       },
     ],

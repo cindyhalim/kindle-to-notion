@@ -1,8 +1,11 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
+import { Context } from "aws-lambda";
+import Notion from "src/api/notion";
 import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
 import { RawReadingListProperties } from "src/api/notion/types";
-import { notion } from "../api/notion";
+import { authorizerMiddleware } from "src/middlewares/authorizer";
+import { getReadListDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
 import {
   makeResultResponse,
   ValidatedAPIGatewayProxyEvent,
@@ -17,10 +20,11 @@ export interface IClippingsPayload {
 const controller = async (
   event: ValidatedAPIGatewayProxyEvent<{
     payload: IClippingsPayload[];
-  }>
+  }>,
+  context: Context & { accessToken: string; readListId: string }
 ) => {
-  const { databaseId } = event.pathParameters;
   const { payload } = event.body;
+  const { accessToken, readListId: databaseId } = context;
 
   if (!payload) {
     throw new Error("Missing payload");
@@ -30,6 +34,8 @@ const controller = async (
     console.log("Nothing to append, returning early");
     makeResultResponse({ success: true });
   }
+
+  const notion = new Notion({ accessToken });
 
   console.log("Retrieving pages");
   const { pages: rawPages } = await notion.getPages<RawReadingListProperties>({
@@ -76,10 +82,13 @@ const controller = async (
     }
 
     console.log("Adding clippings to page");
-    await notion.addClippingsToPage({ pageId, payload: item.clippings });
+    await notion.appendClippingsToPage({ pageId, payload: item.clippings });
   }
 
   return makeResultResponse({ success: true });
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const handler = middy(controller)
+  .use(jsonBodyParser())
+  .use(authorizerMiddleware())
+  .use(getReadListDatabaseIdMiddleware());

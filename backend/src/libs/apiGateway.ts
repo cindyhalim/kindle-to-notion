@@ -1,7 +1,5 @@
-import type { APIGatewayProxyEvent } from "aws-lambda";
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { config } from "src/environment";
-
-const allowedOrigins = [config.clientUrl];
 
 export type ValidatedAPIGatewayProxyEvent<B> = Omit<
   APIGatewayProxyEvent,
@@ -10,11 +8,13 @@ export type ValidatedAPIGatewayProxyEvent<B> = Omit<
   body: B;
 };
 
-export const makeResultResponse = <R>(response: R) => {
+export const makeResultResponse = (response): APIGatewayProxyResult => {
+  const allowedOrigin = config.clientUrl;
+
   return {
     statusCode: 200,
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": allowedOrigin,
     },
     body: JSON.stringify(response),
   };

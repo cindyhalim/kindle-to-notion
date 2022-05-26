@@ -30,9 +30,8 @@ const serverlessConfiguration: Serverless = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NOTION_CLIENT_ID: "${ssm:/kindle-to-notion/notion-client-id}",
       NOTION_CLIENT_SECRET: "${ssm:/kindle-to-notion/notion-client-secret}",
-      NOTION_TOKEN: "${ssm:/kindle-to-notion/notion-token}",
-      CLIENT_URL: "https://notion-kindle.netlify.app/",
-      KINDLE_NOTION_BUCKET_NAME: "${self:service.name}-${self:provider.stage}",
+      CLIENT_URL: "https://notion-kindle.netlify.app",
+      KINDLE_NOTION_BUCKET_NAME: "${self:service.name}",
       MAILER_EMAIL: "${ssm:/kindle-to-notion/transporter-email}",
       MAILER_PASSWORD: "${ssm:/kindle-to-notion/transporter-password}",
     },
@@ -53,7 +52,6 @@ const serverlessConfiguration: Serverless = {
     ],
     lambdaHashingVersion: "20201221",
   },
-
   functions: { ...handlerFunctions },
   stepFunctions: {
     stateMachines: { ...booksStateMachine },

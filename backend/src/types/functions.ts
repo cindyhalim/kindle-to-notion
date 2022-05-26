@@ -7,6 +7,7 @@ export interface IGetBookInfoPayload {
   isbn: string;
   isMissingLink: boolean;
   isMissingDetails: boolean;
+  token: string;
 }
 
 export interface IGetBookDetailsOutput {

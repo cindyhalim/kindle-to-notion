@@ -1,7 +1,11 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { notion, NotionPropertyData, Properties } from "src/api/notion";
-import { RawReadingListProperties } from "src/api/notion/types";
+import Notion from "src/api/notion";
+import {
+  NotionPropertyData,
+  Properties,
+  RawReadingListProperties,
+} from "src/api/notion/types";
 import type {
   IGetBookInfoPayload,
   IGetBookLinkOutput,
@@ -13,7 +17,7 @@ interface IUpdateBookLinkEvent extends IGetBookInfoPayload {
 }
 
 const controller = async (event: IUpdateBookLinkEvent) => {
-  const { pageId, url } = event;
+  const { pageId, url, token } = event;
 
   try {
     const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
@@ -26,6 +30,7 @@ const controller = async (event: IUpdateBookLinkEvent) => {
       ]),
     ];
 
+    const notion = new Notion({ accessToken: token });
     const response =
       await notion.updatePageProperties<RawReadingListProperties>({
         pageId,

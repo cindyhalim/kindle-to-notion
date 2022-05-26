@@ -14,7 +14,7 @@ const retrier = [
 export const booksStateMachine: StateMachine = {
   BooksStateMachine: {
     id: "BooksStateMachine",
-    name: "books-state-machine-${self:provider.stage}",
+    name: "books-state-machine",
     definition: {
       Comment: "Orchestrates logic to retrieve book details and url",
       StartAt: "GetBookInfo",

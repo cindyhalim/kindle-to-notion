@@ -8,18 +8,15 @@ const transporter = nodemailer.createTransport({
 });
 
 const send = async ({
-  fromEmail,
   toEmail,
   fileName,
   file,
 }: {
-  fromEmail: string;
   toEmail: string;
   fileName: string;
   file: Buffer;
 }) => {
   return await transporter.sendMail({
-    from: fromEmail,
     to: toEmail,
     attachments: [
       {

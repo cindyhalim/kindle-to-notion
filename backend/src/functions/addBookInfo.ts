@@ -7,6 +7,9 @@ import {
   makeResultResponse,
   ValidatedAPIGatewayProxyEvent,
 } from "../libs/apiGateway";
+import { authorizerMiddleware } from "src/middlewares/authorizer";
+import { getReadListDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
+import { Context } from "aws-lambda";
 
 const stepFunctions = new StepFunctions();
 
@@ -21,14 +24,11 @@ type AddBookInfoEventBody = {
   }[];
 };
 const controller = async (
-  event: ValidatedAPIGatewayProxyEvent<AddBookInfoEventBody>
+  event: ValidatedAPIGatewayProxyEvent<AddBookInfoEventBody>,
+  context: Context & { accessToken: string; readListId: string }
 ) => {
-  if (!event.pathParameters.databaseId) {
-    throw new Error("Missing database ID");
-  }
-
   const { books } = event.body;
-  const { databaseId } = event.pathParameters;
+  const { accessToken, readListId: databaseId } = context;
 
   try {
     const stateExecutions = books.map((book) => {
@@ -37,6 +37,7 @@ const controller = async (
         executionName,
         databaseId,
         ...book,
+        token: accessToken,
       };
 
       stepFunctions
@@ -56,4 +57,7 @@ const controller = async (
   }
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const handler = middy(controller)
+  .use(jsonBodyParser())
+  .use(authorizerMiddleware())
+  .use(getReadListDatabaseIdMiddleware());
