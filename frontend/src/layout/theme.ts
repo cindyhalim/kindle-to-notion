@@ -1,7 +1,7 @@
 export const theme = {
   breakpoints: ["425px", `768px`, `1170px`, "1280px", "1440px"],
   title: {
-    fontSize: [20, 30, 50, 70],
+    fontSize: [20, 40, 50, 70],
     fontFamily: "Poppins",
   },
   text: {

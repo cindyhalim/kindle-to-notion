@@ -102,7 +102,7 @@ export const GetBooksInfo: React.FC = () => {
   };
 
   const getEmptyState = () => (
-    <>
+    <Box sx={{ color: theme.colors.black }}>
       <Text sx={{ fontSize: 20, marginBottom: 40 }}>
         {"you've added all your books! 🎉"}
       </Text>
@@ -112,7 +112,7 @@ export const GetBooksInfo: React.FC = () => {
       <Text sx={{ fontSize: [12, 14] }}>
         {"make sure your isbn, title, and author fields are populated"}
       </Text>
-    </>
+    </Box>
   );
 
   return (
