@@ -80,7 +80,7 @@ const AuthenticatedHomeContent = () => {
           <Card
             key={idx}
             idx={idx}
-            onClick={() => setTimeout(() => navigate(feature.route), 200)}
+            onClick={() => navigate(feature.route)}
             text={feature.text}
             description={feature.description}
             icon={feature.emoji}
