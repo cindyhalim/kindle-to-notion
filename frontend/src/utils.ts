@@ -41,16 +41,20 @@ export const parseRawClippingData = (data: string | null | ArrayBuffer) => {
       .split(", ");
     const author = `${splicedAuthor[1]} ${splicedAuthor[0]}`;
 
-    const info = sections[1].match(/(?<=- Your Highlight on ).*(?=\|)/);
-    const formattedInfo =
-      info && info[0] ? info[0][0].toUpperCase() + info[0].substring(1) : "";
+    const location = sections[1]
+      .match(/(?=- Your Highlight on ).*(?=\|)/)?.[0]
+      ?.replace("- Your Highlight on ", "");
+
+    const formattedLocation = location
+      ? location[0].toUpperCase() + location.substring(1)
+      : "";
     const quote = sections[2];
 
     parsedClippings.push({
       title,
       author,
       quote,
-      info: formattedInfo,
+      info: formattedLocation,
     });
   }
   return parsedClippings;
