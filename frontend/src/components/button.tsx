@@ -52,6 +52,7 @@ export const Button: React.FC<IButtonProps> = ({
         },
         marginTop: 20,
         border: `3px solid ${theme.colors.black}`,
+        fontWeight: 800,
         ...theme.text,
         ...buttonStyles[type],
         ...sx,
