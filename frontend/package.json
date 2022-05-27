@@ -1,5 +1,5 @@
 {
-  "name": "kindle-to-notion-frontend",
+  "name": "notion-kindle-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

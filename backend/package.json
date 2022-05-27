@@ -1,5 +1,5 @@
 {
-  "name": "kindle-to-notion-backend",
+  "name": "notion-kindle-backend",
   "version": "1.0.0",
   "description": "",
   "main": "serverless.ts",
