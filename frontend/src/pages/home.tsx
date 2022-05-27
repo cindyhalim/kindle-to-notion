@@ -4,6 +4,7 @@ import { Box, Flex, Text } from "rebass";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { getAuth, getNotionAuthorizationUrl } from "../core/auth/utils";
+import { RoutesEnum } from "../core/router/routes";
 import { theme } from "../layout/theme";
 
 const UnauthenticatedHomeContent = () => {
@@ -40,20 +41,20 @@ const AuthenticatedHomeContent = () => {
   const features: IFeatures[] = [
     {
       text: "prettify",
-      route: "prettify",
+      route: RoutesEnum.PRETTIFY,
       emoji: "✨",
       description:
         "get book details, such as book cover and genre, as well as a link to download epub",
     },
     {
       text: "epub to kindle",
-      route: "epub-to-kindle",
+      route: RoutesEnum.EPUB_TO_KINDLE,
       emoji: "🚀",
       description: "send your epub file to your kindle",
     },
     {
       text: "kindle clippings to notion ",
-      route: "clippings-to-notion",
+      route: RoutesEnum.CLIPPINGS_TO_NOTION,
       emoji: "📋",
       description:
         "send your notes and highlights from your kindle to your notion reading list",

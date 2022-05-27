@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { isError, useMutation, useQuery } from "react-query";
 import { Box, Text } from "rebass";
-import { ButtonTypeEnum, IButtonProps } from "../../components/button";
+import { IButtonProps } from "../../components/button";
 import { ErrorToast } from "../../components/error-toast";
 import { DetailsIcon, LinkIcon } from "../../components/icons";
 import { ListCard } from "../../components/list-card";
@@ -48,12 +48,6 @@ export const GetBooksInfo: React.FC = () => {
 
   const buttons: IButtonProps[] = [
     {
-      disabled: isUpdatingBooks,
-      onClick: () => {},
-      type: ButtonTypeEnum.SECONDARY,
-      children: "home",
-    },
-    {
       disabled: !!noneSelected || isUpdatingBooks || isSuccess,
       isLoading: isFetching,
       onClick: () => {
@@ -61,7 +55,6 @@ export const GetBooksInfo: React.FC = () => {
           handleButtonClick({ allBooks: data, selectedBooks: selectedData });
         }
       },
-      sx: { alignSelf: "center" },
       children: "go",
     },
   ];

@@ -5,7 +5,7 @@ import { Flex } from "rebass";
 import { Loading } from "../components/loading";
 import { ACCESS_TOKEN_KEY } from "../core/auth/constants";
 import { authenticate } from "../core/react-query";
-import { Routes } from "../core/router/routes";
+import { RoutesEnum } from "../core/router/routes";
 
 export const AuthRedirect = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export const AuthRedirect = () => {
 
       if (response.accessToken) {
         sessionStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
-        navigate(Routes.HOME);
+        navigate(RoutesEnum.HOME);
       }
     },
     [mutateAsync, navigate]

@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { Routes } from "../routes";
+import { RoutesEnum } from "../routes";
 
 interface IProtectedRouteProps {
   isAuthenticated: boolean;
@@ -9,4 +9,8 @@ interface IProtectedRouteProps {
 export const ProtectedRoute: React.FC<IProtectedRouteProps> = ({
   isAuthenticated,
 }) =>
-  isAuthenticated ? <Outlet /> : <Navigate to={Routes.HOME} replace={true} />;
+  isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to={RoutesEnum.HOME} replace={true} />
+  );

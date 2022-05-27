@@ -11,6 +11,7 @@ import { GetBooksInfo } from "./pages/prettify";
 import { EPubToKindle } from "./pages/epub-to-kindle";
 import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
 import { getAuth } from "./core/auth/utils";
+import { RoutesEnum } from "./core/router/routes";
 
 const queryClient = new QueryClient();
 
@@ -21,19 +22,25 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path={RoutesEnum.HOME} element={<Home />} />
           <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
-            <Route path="prettify" element={<GetBooksInfo />} />
-            <Route path="epub-to-kindle" element={<EPubToKindle />} />
+            <Route path={RoutesEnum.PRETTIFY} element={<GetBooksInfo />} />
             <Route
-              path="clippings-to-notion"
+              path={RoutesEnum.EPUB_TO_KINDLE}
+              element={<EPubToKindle />}
+            />
+            <Route
+              path={RoutesEnum.CLIPPINGS_TO_NOTION}
               element={<UploadClippingsToNotion />}
             />
           </Route>
-          <Route path="terms-and-conditions" element={<TermsAndConditions />} />
-          <Route path="privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="how-to" element={<></>} />
-          <Route path="redirect" element={<AuthRedirect />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/how-to" element={<></>} />
+          <Route path="/redirect" element={<AuthRedirect />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
