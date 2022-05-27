@@ -71,6 +71,7 @@ export const BaseLayout: React.FC<{
       <AnimatedLink
         sx={{ marginBottom: [30, 30, 40] }}
         onClick={() => navigate(RoutesEnum.HOME)}
+        textColor={theme.colors.black}
       >
         {"< home"}
       </AnimatedLink>

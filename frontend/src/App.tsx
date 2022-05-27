@@ -12,6 +12,7 @@ import { EPubToKindle } from "./pages/epub-to-kindle";
 import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
 import { getAuth } from "./core/auth/utils";
 import { RoutesEnum } from "./core/router/routes";
+import { Menu } from "./pages/menu";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ export const App: React.FC = () => {
           <Route path="/how-to" element={<></>} />
           <Route path="/redirect" element={<AuthRedirect />} />
         </Routes>
+        <Menu />
       </BrowserRouter>
     </QueryClientProvider>
   );

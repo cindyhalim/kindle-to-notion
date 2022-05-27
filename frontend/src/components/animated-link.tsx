@@ -7,18 +7,19 @@ import { theme } from "../layout/theme";
 interface IAnimatedLinkProps {
   onClick: () => void;
   sx?: SxStyleProp;
+  textColor?: string;
 }
 export const AnimatedLink: React.FC<IAnimatedLinkProps> = ({
   onClick,
   sx,
   children,
+  textColor = theme.colors.white,
 }) => (
-  <Box sx={{ height: "auto", ...sx }}>
-    <motion.div whileHover={{ scale: 1.5 }} whileTap={{ scale: 1.8 }}>
+  <Box sx={{ height: "auto", color: textColor, ...sx }}>
+    <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 1.3 }}>
       <Text
         sx={{
           ...theme.text,
-          color: theme.colors.black,
           cursor: "pointer",
         }}
         onClick={onClick}

@@ -31,7 +31,7 @@ const UnauthenticatedHomeContent = () => {
 
 interface IFeatures {
   text: string;
-  route: string;
+  route: RoutesEnum;
   description: string;
   emoji: string;
 }
@@ -96,12 +96,14 @@ export const Home = () => {
   return (
     <Flex
       sx={{
+        backgroundColor: theme.colors.white,
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
         height: "100vh",
         padding: [15, 15, 20],
+        position: "relative",
       }}
     >
       {!isAuthenticated ? (
