@@ -10,7 +10,7 @@ const UnauthenticatedHomeContent = () => {
   const notionAuthorizeUrl = getNotionAuthorizationUrl();
 
   return (
-    <>
+    <Box sx={{ textAlign: "center" }}>
       <Text sx={{ ...theme.title, color: theme.colors.black }}>
         {"notion <> kindle"}
       </Text>
@@ -24,7 +24,7 @@ const UnauthenticatedHomeContent = () => {
       >
         get started
       </Button>
-    </>
+    </Box>
   );
 };
 
@@ -100,6 +100,7 @@ export const Home = () => {
         alignItems: "center",
         width: "100%",
         height: "100vh",
+        padding: [15, 15, 20],
       }}
     >
       {!isAuthenticated ? (
