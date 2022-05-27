@@ -1,7 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Flex, Text } from "rebass";
 import { Button, IButtonProps } from "../components/button";
+import { AnimatedLink } from "../components/animated-link";
 import { Loading } from "../components/loading";
+import { RoutesEnum } from "../core/router/routes";
 import { theme } from "./theme";
 
 export const BaseLayout: React.FC<{
@@ -14,6 +17,7 @@ export const BaseLayout: React.FC<{
     isEmpty?: boolean;
   };
 }> = ({ children, title, buttons, queryProps }) => {
+  const navigate = useNavigate();
   const getButtons = () => {
     if (queryProps?.isLoading) {
       return null;
@@ -64,6 +68,12 @@ export const BaseLayout: React.FC<{
         padding: 20,
       }}
     >
+      <AnimatedLink
+        sx={{ marginBottom: [30, 30, 40] }}
+        onClick={() => navigate(RoutesEnum.HOME)}
+      >
+        {"< home"}
+      </AnimatedLink>
       <Text sx={{ ...theme.title, color: theme.colors.black }}>{title}</Text>
       <Flex
         sx={{
