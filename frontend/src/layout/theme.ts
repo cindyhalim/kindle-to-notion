@@ -4,6 +4,10 @@ export const theme = {
     fontSize: [20, 30, 50, 70],
     fontFamily: "Poppins",
   },
+  heading: {
+    fontSize: [14, 16, 18],
+    fontFamily: "Poppins",
+  },
   text: {
     fontSize: [12, 14, 16],
     fontFamily: "Poppins",

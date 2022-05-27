@@ -13,6 +13,7 @@ import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
 import { getAuth } from "./core/auth/utils";
 import { RoutesEnum } from "./core/router/routes";
 import { Menu } from "./pages/menu";
+import { HowTo } from "./pages/how-to";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,7 @@ export const App: React.FC = () => {
             element={<TermsAndConditions />}
           />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/how-to" element={<></>} />
+          <Route path="/how-to" element={<HowTo />} />
           <Route path="/redirect" element={<AuthRedirect />} />
         </Routes>
         <Menu />
