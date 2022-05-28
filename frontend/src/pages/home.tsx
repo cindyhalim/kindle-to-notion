@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Flex, Text } from "rebass";
-import { Button } from "../components/button";
+import { Button, ButtonTypeEnum, IButtonProps } from "../components/button";
 import { Card } from "../components/card";
 import { getAuth, getNotionAuthorizationUrl } from "../core/auth/utils";
 import { RoutesEnum } from "../core/router/routes";
@@ -9,22 +9,43 @@ import { theme } from "../layout/theme";
 
 const UnauthenticatedHomeContent = () => {
   const notionAuthorizeUrl = getNotionAuthorizationUrl();
+  const navigate = useNavigate();
 
+  const buttons: IButtonProps[] = [
+    {
+      type: ButtonTypeEnum.SECONDARY,
+      children: "how to",
+      onClick: () => navigate(RoutesEnum.HOW_TO),
+    },
+    {
+      children: "get started",
+      onClick: () => {
+        window.location.href = notionAuthorizeUrl;
+      },
+    },
+  ];
   return (
     <Box sx={{ textAlign: "center" }}>
       <Text sx={{ ...theme.title, color: theme.colors.black }}>
         {"notion <> kindle"}
       </Text>
-      <Text sx={{ ...theme.text, color: theme.colors.black, marginBottom: 40 }}>
+      <Text sx={{ ...theme.text, color: theme.colors.black, marginBottom: 60 }}>
         a collection of tools to improve your e-reading experience
       </Text>
-      <Button
-        onClick={() => {
-          window.location.href = notionAuthorizeUrl;
+      <Flex
+        sx={{
+          width: ["100%", "100%", "600px"],
+          justifyContent: "center",
         }}
       >
-        get started
-      </Button>
+        {buttons.map((buttonProps, idx) => (
+          <Button
+            key={idx}
+            {...buttonProps}
+            sx={{ ...buttonProps.sx, marginLeft: idx > 0 ? 10 : undefined }}
+          />
+        ))}
+      </Flex>
     </Box>
   );
 };

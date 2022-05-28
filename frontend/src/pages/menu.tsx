@@ -40,7 +40,6 @@ export const Menu = () => {
             backgroundColor: theme.colors.black,
             width: "100%",
             height: "100vh",
-            // zIndex: 1,
             position: "absolute",
             top: 0,
             left: 0,
@@ -50,15 +49,6 @@ export const Menu = () => {
             flexDirection: "column",
           }}
         >
-          <Box
-            sx={{
-              position: "absolute",
-              top: [20, 20, 40],
-              right: [20, 20, 40],
-              cursor: "pointer",
-            }}
-            onClick={reset}
-          ></Box>
           {options.map((option, idx) => (
             <AnimatedLink
               key={idx}
