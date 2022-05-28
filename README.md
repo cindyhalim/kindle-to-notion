@@ -5,6 +5,7 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/889ed712-591c-42c2-814e-3f6470b0908c/deploy-status)](https://app.netlify.com/sites/notion-kindle/deploys)
 
 a collection of tools to improve your e-reading experience.
+
 built with **React, AWS (Lambda, Step Functions, S3), Notion API, Puppeteer, and Nodemailer**.
 
 try it out **[here](https://notion-kindle.netlify.app/)**
@@ -16,22 +17,16 @@ try it out **[here](https://notion-kindle.netlify.app/)**
 - duplicate the [following notion template](https://cindyhalim.notion.site/reading-list-template-602f353294734d8488e862621df209f0) and follow steps outlined.
 - head over to the app and connect to your new reading list notion page.
 
-<br/>
-
 ### features:
 
 - prettify your reading list: get book info such as genre and number of pages as well as open source epub download link.
 - epub to kindle: upload your downloaded epub and send them directly to your kindle, courtesy of amazon's [send to kindle by email feature](https://www.amazon.com/sendtokindle/email).
 - clippings to notion: upload your kindle notes/highlights to your notion reading list.
 
-  <br/>
-
 ### future improvements:
 
 - epub to kindle: convert epub to mobi, as that is the recommended kindle format
 - clippings to notion: ability to edit title and author
-
-  <br/>
 
 ### interested in how i built this?
 
