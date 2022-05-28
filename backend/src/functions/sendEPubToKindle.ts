@@ -1,3 +1,5 @@
+import { Context } from "aws-lambda";
+import { Readable } from "stream";
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { RawEmailListProperties } from "src/api/notion/types";
@@ -10,8 +12,6 @@ import {
 import { mailer } from "@libs/mailer";
 import { authorizerMiddleware } from "src/middlewares/authorizer";
 import { getEmailsDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
-import { Context } from "aws-lambda";
-
 const controller = async (
   event: ValidatedAPIGatewayProxyEvent<{
     uploadKey: string;
@@ -45,12 +45,10 @@ const controller = async (
     throw new Error("Cannot send with missing email(s)");
   }
 
-  // get file from s3
   const file = (await s3.getObject({
     key: uploadKey,
-  })) as Buffer;
+  })) as Readable;
 
-  // TODO: fix attachments not being recognized by kindle
   try {
     await mailer.send({
       toEmail: kindleEmail,
@@ -61,7 +59,7 @@ const controller = async (
     console.log("Error sending email", e);
   }
 
-  s3.deleteObject({ key: uploadKey });
+  await s3.deleteObject({ key: uploadKey });
 
   return makeResultResponse({ success: true });
 };

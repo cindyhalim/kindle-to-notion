@@ -57,13 +57,13 @@ const getObject = async ({ key }: { key: string }) => {
   }
 };
 
-const deleteObject = ({ key }: { key: string }) => {
+const deleteObject = async ({ key }: { key: string }) => {
   try {
     const params: S3.DeleteObjectRequest = {
       Key: `uploads/${key}`,
       Bucket: bucketName,
     };
-    return s3Client.deleteObject(params);
+    return await s3Client.deleteObject(params).promise();
   } catch (e) {
     console.log("Error deleting object");
   }
