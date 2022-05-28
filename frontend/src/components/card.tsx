@@ -29,6 +29,7 @@ export const Card: React.FC<ICardProps> = ({
       onHoverEnd={() => setIsHovered(false)}
       whileTap={{ scale: 1.2 }}
       initial={{ scale: 0.9 }}
+      onClick={onClick}
     >
       <Box
         sx={{
@@ -45,7 +46,6 @@ export const Card: React.FC<ICardProps> = ({
           marginY: [15, 20, undefined],
           marginX: [undefined, undefined, 50],
         }}
-        onClick={onClick}
       >
         <Box sx={{ display: ["none", "none", "block"] }}>
           {isHovered ? (
