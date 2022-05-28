@@ -11,7 +11,7 @@ import { getAuth } from "./core/auth/utils";
 axios.interceptors.request.use((request) => {
   const { accessToken } = getAuth();
 
-  if (accessToken) {
+  if (accessToken && request?.headers) {
     const base64encodedToken = btoa(accessToken);
     request.headers["Authorization"] = `Bearer ${base64encodedToken}`;
   }
