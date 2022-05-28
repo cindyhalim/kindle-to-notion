@@ -97,7 +97,7 @@ export const GetBooksInfo: React.FC = () => {
   const getEmptyState = () => (
     <Box sx={{ color: theme.colors.black, textAlign: "center" }}>
       <Text sx={{ fontSize: 20, marginBottom: 40 }}>
-        {"you've added all your books! 🎉"}
+        {"nothing to pretiffy here! 🎉"}
       </Text>
       <Text sx={{ fontSize: [12, 14] }}>
         {"should be seeing your reading list?"}

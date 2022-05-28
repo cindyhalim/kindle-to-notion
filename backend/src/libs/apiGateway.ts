@@ -9,12 +9,14 @@ export type ValidatedAPIGatewayProxyEvent<B> = Omit<
 };
 
 export const makeResultResponse = (response): APIGatewayProxyResult => {
-  const allowedOrigin = config.clientUrl;
+  const allowOrigin = config.clientUrl;
+  console.log("hii allow origin", allowOrigin);
 
   return {
     statusCode: 200,
     headers: {
-      "Access-Control-Allow-Origin": allowedOrigin,
+      "Access-Control-Allow-Origin": allowOrigin,
+      "Access-Control-Allow-Credentials": true,
     },
     body: JSON.stringify(response),
   };
