@@ -30,5 +30,5 @@ try it out **[here](https://notion-kindle.netlify.app/)**
 
 ### interested in how i built this?
 
-- [backend readme](https://github.com/cindyhalim/notion-kindle/backend/README.md)
-- [frontend readme](https://github.com/cindyhalim/notion-kindle/frontend/README.md)
+- [backend readme](backend/README.md)
+- [frontend readme](frontend/README.md)
