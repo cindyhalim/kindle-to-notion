@@ -6,7 +6,7 @@
 
 a collection of tools to improve your e-reading experience.
 
-built with **React, AWS (Lambda, Step Functions, S3), Notion API, Puppeteer, and Nodemailer**.
+built with **React, Serverless, AWS (Lambda, Step Functions, S3), Notion API, Puppeteer, and Nodemailer**.
 
 try it out **[here](https://notion-kindle.netlify.app/)**
 
