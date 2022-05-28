@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { Flex } from "rebass";
+import { Flex, Text } from "rebass";
 import { Loading } from "../components/loading";
 import { ACCESS_TOKEN_KEY } from "../core/auth/constants";
 import { authenticate } from "../core/react-query";
 import { RoutesEnum } from "../core/router/routes";
+import { theme } from "../layout/theme";
 
 export const AuthRedirect = () => {
   const navigate = useNavigate();
@@ -36,7 +37,18 @@ export const AuthRedirect = () => {
   }, [code, error, getAccessToken]);
 
   if (showError) {
-    return <>ERROR!</>;
+    return (
+      <Flex
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100%",
+        }}
+      >
+        <Text sx={{ ...theme.title }}>something went wrong :(</Text>
+      </Flex>
+    );
   }
 
   return (

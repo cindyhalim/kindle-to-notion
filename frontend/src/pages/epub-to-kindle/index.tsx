@@ -30,6 +30,9 @@ export const EPubToKindle: React.FC = () => {
     "sendToKindle",
     sendToKindleFn,
     {
+      onSuccess: () => {
+        setIsUploading(false);
+      },
       onError: () => {
         setIsUploading(false);
       },
@@ -67,8 +70,6 @@ export const EPubToKindle: React.FC = () => {
         await uploadFile({ url: response.url, file: ePub });
 
         await sendToKindle({ uploadKey: key });
-
-        setIsUploading(false);
       },
       children: "send to kindle",
     },
