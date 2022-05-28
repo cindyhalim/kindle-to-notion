@@ -24,7 +24,6 @@ export const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path={RoutesEnum.HOME} element={<Home />} />
           <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
             <Route path={RoutesEnum.PRETTIFY} element={<GetBooksInfo />} />
             <Route
@@ -36,13 +35,11 @@ export const App: React.FC = () => {
               element={<UploadClippingsToNotion />}
             />
           </Route>
-          <Route
-            path="/terms-and-conditions"
-            element={<TermsAndConditions />}
-          />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/how-to" element={<HowTo />} />
+          <Route path={RoutesEnum.TERMS} element={<TermsAndConditions />} />
+          <Route path={RoutesEnum.PRIVACY} element={<PrivacyPolicy />} />
+          <Route path={RoutesEnum.HOW_TO} element={<HowTo />} />
           <Route path="/redirect" element={<AuthRedirect />} />
+          <Route path={RoutesEnum.HOME} element={<Home />} />
         </Routes>
         <Menu />
       </BrowserRouter>
