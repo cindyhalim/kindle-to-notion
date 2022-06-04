@@ -1,7 +1,7 @@
 import React from "react";
-import Lottie from "react-lottie";
 import loadingLightAnimationData from "../assets/loading.json";
 import loadingDarkAnimationData from "../assets/loading-dark.json";
+import { Lottie } from "./lottie";
 
 export const Loading: React.FC<{
   isDark?: boolean;
@@ -11,12 +11,9 @@ export const Loading: React.FC<{
   <Lottie
     width={width}
     height={height}
-    options={{
-      autoplay: true,
-      loop: true,
-      animationData: isDark
-        ? loadingDarkAnimationData
-        : loadingLightAnimationData,
-    }}
+    loop
+    animationData={
+      isDark ? loadingDarkAnimationData : loadingLightAnimationData
+    }
   />
 );

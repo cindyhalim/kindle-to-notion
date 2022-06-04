@@ -1,7 +1,7 @@
 import React from "react";
 import { Flex } from "rebass";
-import Lottie from "react-lottie";
 import animationData from "../assets/upload-loading-animation.json";
+import { Lottie } from "./lottie";
 
 export const UploadLoading: React.FC<{
   onLoopComplete: () => void;
@@ -10,11 +10,7 @@ export const UploadLoading: React.FC<{
     <Lottie
       width={150}
       height={150}
-      options={{
-        autoplay: true,
-
-        animationData: animationData,
-      }}
+      animationData={animationData}
       eventListeners={[
         {
           eventName: "loopComplete",
