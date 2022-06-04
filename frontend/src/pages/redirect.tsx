@@ -24,7 +24,7 @@ export const AuthRedirect = () => {
 
       if (response.accessToken) {
         sessionStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
-        navigate(RoutesEnum.HOME);
+        navigate(RoutesEnum.HOME, { replace: true });
       }
     },
     [mutateAsync, navigate]
