@@ -8,9 +8,7 @@ interface IProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<IProtectedRouteProps> = ({
   isAuthenticated,
-}) =>
-  isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate to={RoutesEnum.HOME} replace={true} />
-  );
+}) => {
+  console.log("hii isAuthenticated", isAuthenticated);
+  return isAuthenticated ? <Outlet /> : <Navigate to={RoutesEnum.HOME} />;
+};

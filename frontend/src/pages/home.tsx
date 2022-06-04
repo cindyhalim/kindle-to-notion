@@ -102,7 +102,6 @@ const AuthenticatedHomeContent = () => {
             key={idx}
             idx={idx}
             onClick={() => {
-              console.log("hii here");
               navigate(feature.route);
             }}
             text={feature.text}
