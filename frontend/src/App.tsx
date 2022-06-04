@@ -10,7 +10,6 @@ import { ProtectedRoute } from "./core/router/components/protected-route";
 import { GetBooksInfo } from "./pages/prettify";
 import { EPubToKindle } from "./pages/epub-to-kindle";
 import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
-import { getAuth } from "./core/auth/utils";
 import { RoutesEnum } from "./core/router/routes";
 import { Menu } from "./pages/menu";
 import { HowTo } from "./pages/how-to";
@@ -18,13 +17,11 @@ import { HowTo } from "./pages/how-to";
 const queryClient = new QueryClient();
 
 export const App: React.FC = () => {
-  const { isAuthenticated } = getAuth();
-
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+          <Route element={<ProtectedRoute />}>
             <Route path={RoutesEnum.PRETTIFY} element={<GetBooksInfo />} />
             <Route
               path={RoutesEnum.EPUB_TO_KINDLE}

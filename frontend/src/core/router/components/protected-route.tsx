@@ -1,14 +1,10 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { getAuth } from "../../auth/utils";
 import { RoutesEnum } from "../routes";
 
-interface IProtectedRouteProps {
-  isAuthenticated: boolean;
-}
+export const ProtectedRoute: React.FC = () => {
+  const { isAuthenticated } = getAuth();
 
-export const ProtectedRoute: React.FC<IProtectedRouteProps> = ({
-  isAuthenticated,
-}) => {
-  console.log("hii isAuthenticated", isAuthenticated);
   return isAuthenticated ? <Outlet /> : <Navigate to={RoutesEnum.HOME} />;
 };
