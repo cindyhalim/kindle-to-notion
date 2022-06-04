@@ -1,6 +1,3 @@
-import lottie, { AnimationItem } from "lottie-web";
-import { useEffect, useRef } from "react";
-
 interface IParsedClipping {
   title: string;
   author: string;
