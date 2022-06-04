@@ -101,7 +101,10 @@ const AuthenticatedHomeContent = () => {
           <Card
             key={idx}
             idx={idx}
-            onClick={() => navigate(feature.route)}
+            onClick={() => {
+              console.log("hii here");
+              navigate(feature.route);
+            }}
             text={feature.text}
             description={feature.description}
             icon={feature.emoji}
