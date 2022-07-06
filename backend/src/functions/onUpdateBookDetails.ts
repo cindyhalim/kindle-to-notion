@@ -21,27 +21,33 @@ const controller = async (event: IUpdateBookDetailsEvent) => {
 
   try {
     const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
-      ...(details.genre.length && [
-        {
-          propertyName: "genre" as const,
-          propertyType: Properties.MULTI_SELECT,
-          data: details.genre,
-        },
-      ]),
-      ...(details.coverUrl && [
-        {
-          propertyName: "book cover" as const,
-          propertyType: Properties.FILES,
-          data: details.coverUrl,
-        },
-      ]),
-      ...(details.pages && [
-        {
-          propertyName: "pages" as const,
-          propertyType: Properties.RICH_TEXT,
-          data: details.pages,
-        },
-      ]),
+      ...(details.genre.length
+        ? [
+            {
+              propertyName: "genre" as const,
+              propertyType: Properties.MULTI_SELECT,
+              data: details.genre,
+            },
+          ]
+        : []),
+      ...(details.coverUrl
+        ? [
+            {
+              propertyName: "book cover" as const,
+              propertyType: Properties.FILES,
+              data: details.coverUrl,
+            },
+          ]
+        : []),
+      ...(details.pages
+        ? [
+            {
+              propertyName: "pages" as const,
+              propertyType: Properties.RICH_TEXT,
+              data: details.pages,
+            },
+          ]
+        : []),
     ];
 
     const notion = new Notion({ accessToken: token });
