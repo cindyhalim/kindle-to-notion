@@ -35,6 +35,17 @@ const controller = async (
 
     await page.waitForNavigation();
 
+    // if there is a pop up modal close it
+    try {
+      const popUpModalCloseButtonSelector = "div.modal__close > button";
+      await page.waitForSelector("popUpModalCloseButtonSelector", {
+        timeout: 50,
+      });
+      page.click(popUpModalCloseButtonSelector);
+    } catch {
+      // do nothing
+    }
+
     console.log("Getting book cover url");
     const coverUrl = await page.$$eval('img[id="coverImage"]', (img) =>
       img?.[0]?.getAttribute("src")
