@@ -32,8 +32,13 @@ const serverlessConfiguration: Serverless = {
       NOTION_CLIENT_SECRET: "${ssm:/kindle-to-notion/notion-client-secret}",
       CLIENT_URL: "https://notion-kindle.netlify.app",
       KINDLE_NOTION_BUCKET_NAME: "${self:service.name}",
-      MAILER_EMAIL: "${ssm:/kindle-to-notion/transporter-email}",
+      MAILER_USERNAME: "${ssm:/kindle-to-notion/transporter-email}",
       MAILER_PASSWORD: "${ssm:/kindle-to-notion/transporter-password}",
+      MAILER_CLIENT_ID: "${ssm:/kindle-to-notion/transporter-client-id}",
+      MAILER_CLIENT_SECRET:
+        "${ssm:/kindle-to-notion/transporter-client-secret}",
+      MAILER_REFRESH_TOKEN:
+        "${ssm:/kindle-to-notion/transporter-refresh-token}",
     },
     iamRoleStatements: [
       {

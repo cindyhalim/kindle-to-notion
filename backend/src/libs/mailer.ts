@@ -3,9 +3,17 @@ import { config } from "src/environment";
 import { Readable } from "stream";
 
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
+  host: "smtp.gmail.com",
+  port: 465,
   secure: true,
-  auth: { user: config.mailerEmail, pass: config.mailerPassword },
+  auth: {
+    type: "OAuth2",
+    // setup using this article as reference: https://www.freecodecamp.org/news/use-nodemailer-to-send-emails-from-your-node-js-server/
+    user: config.mailerUsername,
+    clientId: config.mailerClientId,
+    clientSecret: config.mailerClientSecret,
+    refreshToken: config.mailerRefreshToken,
+  },
 });
 
 const send = async ({
@@ -21,8 +29,8 @@ const send = async ({
 
   return await transporter.sendMail({
     from: {
-      name: "KindleNotion Support",
-      address: config.mailerEmail,
+      name: "NotionKindle Support",
+      address: config.mailerUsername,
     },
     to: toEmail,
     subject: "send to kindle",

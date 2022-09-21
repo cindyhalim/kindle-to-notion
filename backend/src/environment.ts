@@ -9,6 +9,9 @@ export const config = {
     .get("KINDLE_NOTION_BUCKET_NAME")
     .required()
     .asString(),
-  mailerEmail: env.get("MAILER_EMAIL").required().asString(),
+  mailerUsername: env.get("MAILER_USERNAME").required().asString(),
   mailerPassword: env.get("MAILER_PASSWORD").required().asString(),
+  mailerClientId: env.get("MAILER_CLIENT_ID").required().asString(),
+  mailerClientSecret: env.get("MAILER_CLIENT_SECRET").required().asString(),
+  mailerRefreshToken: env.get("MAILER_REFRESH_TOKEN").required().asString(),
 };
