@@ -230,6 +230,10 @@ export default class Notion {
         return {
           [Properties.URL]: data,
         };
+      case Properties.NUMBER:
+        return {
+          [Properties.NUMBER]: data,
+        };
       default:
         return null;
     }

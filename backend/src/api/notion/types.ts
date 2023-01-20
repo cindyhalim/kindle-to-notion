@@ -94,8 +94,8 @@ export type RawReadingListProperties = {
   };
   pages: {
     id: "drf%3E";
-    type: "rich_text";
-    rich_text: [];
+    type: "number";
+    number: number | null;
   };
   "date finished": {
     id: "gGRt";
@@ -148,6 +148,7 @@ export enum Properties {
   FILES = "files",
   URL = "url",
   TITLE = "title",
+  NUMBER = "number",
 }
 
 export interface NotionPropertyData<T> {

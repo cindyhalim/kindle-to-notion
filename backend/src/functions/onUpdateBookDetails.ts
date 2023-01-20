@@ -43,8 +43,8 @@ const controller = async (event: IUpdateBookDetailsEvent) => {
         ? [
             {
               propertyName: "pages" as const,
-              propertyType: Properties.RICH_TEXT,
-              data: details.pages,
+              propertyType: Properties.NUMBER,
+              data: Number(details.pages),
             },
           ]
         : []),
