@@ -31,9 +31,7 @@ const controller = async (
 
     await searchFormInput.type(isbn);
 
-    await page.keyboard.press("Enter");
-
-    await page.waitForNavigation();
+    await Promise.all([page.waitForNavigation(), page.keyboard.press("Enter")]);
 
     // if there is a pop up modal close it
     try {
@@ -41,29 +39,36 @@ const controller = async (
       await page.waitForSelector("popUpModalCloseButtonSelector", {
         timeout: 50,
       });
-      page.click(popUpModalCloseButtonSelector);
+      console.log(
+        "hii page popUpModalCloseButtonSelector?",
+        popUpModalCloseButtonSelector
+      );
+      await page.click(popUpModalCloseButtonSelector);
     } catch {
       // do nothing
     }
 
     console.log("Getting book cover url");
-    const coverUrl = await page.$$eval('img[id="coverImage"]', (img) =>
-      img?.[0]?.getAttribute("src")
+    const coverUrl = await page.$$eval(
+      "div.BookCover__image > div > img",
+      (img) => img?.[0]?.getAttribute("src")
     );
 
     console.log("Getting page count");
+
     const pageCount = await page.$eval(
-      'span[itemprop="numberOfPages"]',
-      (span: HTMLSpanElement) => span?.innerText || ""
+      'p[data-testid="pagesFormat"]',
+      (p: HTMLParagraphElement) => p?.innerText.split(" ")[0] || ""
     );
+
     const digitsOnlyRegex = new RegExp(/[0-9]/, "g");
     const pages = pageCount.match(digitsOnlyRegex).join("");
 
     console.log("Getting genre");
     const genre = await page.$$eval(
-      'div.left > a[href^="/genres/"]',
-      (genres: HTMLAnchorElement[]) =>
-        genres.map((genre) => genre?.innerText?.toLowerCase()).slice(0, 3)
+      'span.BookPageMetadataSection__genreButton > a[href^="/genres/"]',
+      (genres: HTMLSpanElement[]) =>
+        genres.map((genre) => genre?.innerText?.toLowerCase())
     );
 
     await browser.close();
