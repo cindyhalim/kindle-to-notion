@@ -19,6 +19,18 @@ export const handlerFunctions: Serverless["functions"] = {
         http: {
           method: "post",
           path: "/authenticate",
+          request: {
+            parameters: {
+              querystrings: {
+                mode: false,
+              },
+            },
+          },
+          cors: true,
+        },
+      },
+    ],
+  },
           cors: true,
         },
       },

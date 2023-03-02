@@ -30,6 +30,10 @@ const serverlessConfiguration: Serverless = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NOTION_CLIENT_ID: "${ssm:/kindle-to-notion/notion-client-id}",
       NOTION_CLIENT_SECRET: "${ssm:/kindle-to-notion/notion-client-secret}",
+      EXTENSION_NOTION_CLIENT_ID:
+        "${ssm:/kindle-to-notion/extension-notion-client-id}",
+      EXTENSION_NOTION_CLIENT_SECRET:
+        "${ssm:/kindle-to-notion/extension-notion-client-secret}",
       CLIENT_URL: "https://notion-kindle.netlify.app",
       KINDLE_NOTION_BUCKET_NAME: "${self:service.name}",
       MAILER_USERNAME: "${ssm:/kindle-to-notion/transporter-email}",

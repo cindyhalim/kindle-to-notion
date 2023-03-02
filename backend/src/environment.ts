@@ -5,6 +5,13 @@ export const config = {
   notionClientId: env.get("NOTION_CLIENT_ID").required().asString(),
   notionClientSecret: env.get("NOTION_CLIENT_SECRET").required().asString(),
   clientUrl: env.get("CLIENT_URL").required().asString(),
+  readsExtension: {
+    notionClientId: env.get("EXTENSION_NOTION_CLIENT_ID").required().asString(),
+    notionClientSecret: env
+      .get("EXTENSION_NOTION_CLIENT_SECRET")
+      .required()
+      .asString(),
+  },
   kindleNotionBucketName: env
     .get("KINDLE_NOTION_BUCKET_NAME")
     .required()

@@ -29,6 +29,30 @@ interface INotionAuthResponse {
 
 const NOTION_AUTH_URL = "https://api.notion.com/v1/oauth/token";
 
+function getRedirectUri(mode: string) {
+  switch (mode) {
+    case "extension":
+      return `${config.clientUrl}/auth/success`;
+    default:
+      return `${config.clientUrl}/redirect`;
+  }
+}
+
+function getNotionCredentials(mode: string) {
+  switch (mode) {
+    case "extension":
+      return {
+        clientId: config.readsExtension.notionClientId,
+        clientSecret: config.readsExtension.notionClientSecret,
+      };
+    default:
+      return {
+        clientId: config.notionClientId,
+        clientSecret: config.notionClientSecret,
+      };
+  }
+}
+
 const controller = async (
   event: ValidatedAPIGatewayProxyEvent<IAuthenticateEventBody>
 ) => {
@@ -37,22 +61,25 @@ const controller = async (
   }
   try {
     const { code } = event.body;
+    const { mode } = event.queryStringParameters;
+    const { clientId, clientSecret } = getNotionCredentials(mode);
 
-    const credential = Buffer.from(
-      `${config.notionClientId}:${config.notionClientSecret}`
+    const encodedCredentials = Buffer.from(
+      `${clientId}:${clientSecret}`
     ).toString("base64");
 
-    const body: INotionAuthBody = {
+    let body: INotionAuthBody = {
       grant_type: "authorization_code",
       code,
-      redirect_uri: `${config.clientUrl}/redirect`,
+      redirect_uri: getRedirectUri(mode),
     };
+
     const response: AxiosResponse<INotionAuthResponse> = await axios.post(
       NOTION_AUTH_URL,
       body,
       {
         headers: {
-          Authorization: `Basic ${credential}`,
+          Authorization: `Basic ${encodedCredentials}`,
         },
       }
     );
@@ -61,7 +88,11 @@ const controller = async (
       throw new Error("Error requesting token");
     }
 
-    return makeResultResponse({ accessToken: response.data.access_token });
+    return makeResultResponse({
+      accessToken: response.data.access_token,
+      workspaceName: response.data.workspace_name || null,
+      workspaceIcon: response.data.workspace_icon || null,
+    });
   } catch (e) {
     throw new Error("Error authenticating");
   }
