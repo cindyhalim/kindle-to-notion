@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { TermsAndConditions } from "./pages/terms-and-conditions";
 import { PrivacyPolicy } from "./pages/privacy-policy";
-import { AuthRedirect } from "./pages/redirect";
+import { AuthRedirect, SuccessRedirect } from "./pages/redirect";
 import { ProtectedRoute } from "./core/router/components/protected-route";
 import { GetBooksInfo } from "./pages/prettify";
 import { EPubToKindle } from "./pages/epub-to-kindle";
@@ -36,6 +36,7 @@ export const App: React.FC = () => {
           <Route path={RoutesEnum.PRIVACY} element={<PrivacyPolicy />} />
           <Route path={RoutesEnum.HOW_TO} element={<HowTo />} />
           <Route path="/redirect" element={<AuthRedirect />} />
+          <Route path="auth/success" element={<SuccessRedirect />} />
           <Route path={RoutesEnum.HOME} element={<Home />} />
         </Routes>
         <Menu />

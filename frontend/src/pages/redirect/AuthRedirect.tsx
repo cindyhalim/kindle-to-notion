@@ -2,11 +2,11 @@ import React, { useCallback, useEffect } from "react";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { Flex, Text } from "rebass";
-import { Loading } from "../components/loading";
-import { ACCESS_TOKEN_KEY } from "../core/auth/constants";
-import { authenticate } from "../core/react-query";
-import { RoutesEnum } from "../core/router/routes";
-import { theme } from "../layout/theme";
+import { Loading } from "../../components/loading";
+import { ACCESS_TOKEN_KEY } from "../../core/auth/constants";
+import { authenticate } from "../../core/react-query";
+import { RoutesEnum } from "../../core/router/routes";
+import { theme } from "../../layout/theme";
 
 export const AuthRedirect = () => {
   const navigate = useNavigate();
