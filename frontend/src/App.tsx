@@ -36,7 +36,7 @@ export const App: React.FC = () => {
           <Route path={RoutesEnum.PRIVACY} element={<PrivacyPolicy />} />
           <Route path={RoutesEnum.HOW_TO} element={<HowTo />} />
           <Route path="/redirect" element={<AuthRedirect />} />
-          <Route path="auth/success" element={<SuccessRedirect />} />
+          <Route path="/auth/success" element={<SuccessRedirect />} />
           <Route path={RoutesEnum.HOME} element={<Home />} />
         </Routes>
         <Menu />
