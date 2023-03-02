@@ -15,18 +15,35 @@ export default class Notion {
     this.client = new Client({ auth: accessToken });
   }
 
-  public getDatabaseId = async (
+  public getDatabaseIds = async (
     databaseName: string
-  ): Promise<string | null> => {
+  ): Promise<{ id: string; pageId: string }[] | null> => {
     const database = await this.client.search({
       query: databaseName,
     });
 
-    if (!database.results.length) {
-      return null;
-    }
+    return database.results.map((result) => ({
+      id: result.id,
+      pageId: result["parent"].page_id,
+    }));
+  };
 
-    return database.results?.[0]?.id;
+  public getPageInfo = async (
+    pageId: string
+  ): Promise<{
+    archived: boolean;
+    name: string;
+    emoji: string | null;
+    url: string;
+  }> => {
+    const page = await this.client.pages.retrieve({ page_id: pageId });
+
+    return {
+      archived: page["archived"],
+      name: page["properties"]["title"]["title"][0].plain_text,
+      emoji: page["icon"].type === "emoji" ? page["icon"].emoji : null,
+      url: page["url"],
+    };
   };
 
   public addPage = async <T>(params: {

@@ -25,12 +25,14 @@ export const getReadListDatabaseIdMiddleware = <B>(): middy.MiddlewareObject<
 
       const client = new Notion({ accessToken });
 
-      const readListDatabaseId = await client.getDatabaseId("read list");
+      const readListDatabaseIds = await client.getDatabaseIds("read list");
 
-      if (!readListDatabaseId) {
+      if (!readListDatabaseIds.length) {
         const error = createError(404, "Could not find Notion databases");
         throw error;
       }
+
+      const readListDatabaseId = readListDatabaseIds[0].id;
 
       handler.context["readListId"] = readListDatabaseId;
     },
@@ -58,12 +60,14 @@ export const getEmailsDatabaseIdMiddleware = <B>(): middy.MiddlewareObject<
 
       const client = new Notion({ accessToken });
 
-      const emailDatabaseId = await client.getDatabaseId("emails");
+      const emailDatabaseIds = await client.getDatabaseIds("emails");
 
-      if (!emailDatabaseId) {
+      if (!emailDatabaseIds.length) {
         const error = createError(404, "Could not find Notion databases");
         throw error;
       }
+
+      const emailDatabaseId = emailDatabaseIds[0].id;
 
       handler.context["emailListId"] = emailDatabaseId;
     },

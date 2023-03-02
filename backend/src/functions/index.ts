@@ -31,6 +31,13 @@ export const handlerFunctions: Serverless["functions"] = {
       },
     ],
   },
+  getReadListDetails: {
+    handler: "src/functions/getReadListDetails.handler",
+    events: [
+      {
+        http: {
+          method: "get",
+          path: "/read-list/details",
           cors: true,
         },
       },
@@ -42,7 +49,7 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "get",
-          path: `/read-list`,
+          path: "/read-list",
           cors: true,
         },
       },
@@ -64,7 +71,7 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/read-list`,
+          path: "/read-list",
           cors: true,
         },
       },
@@ -88,7 +95,7 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/clippings/export`,
+          path: "/clippings/export",
           cors: true,
         },
       },
@@ -100,7 +107,7 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/presigned-url`,
+          path: "/presigned-url",
           cors: true,
         },
       },
@@ -112,7 +119,7 @@ export const handlerFunctions: Serverless["functions"] = {
       {
         http: {
           method: "post",
-          path: `/kindle`,
+          path: "/kindle",
           cors: true,
         },
       },
