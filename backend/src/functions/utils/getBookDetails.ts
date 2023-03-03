@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import { puppeteer } from "@libs/puppeteer";
 import fetch from "node-fetch";
 
 type BookSchemaJsonLd = {
@@ -31,32 +30,12 @@ type BookDetails = {
 export default async function getBookDetails(
   isbn: string
 ): Promise<BookDetails> {
-  const { page, browser } = await puppeteer.launchAndGoTo({
-    link: "https://www.goodreads.com",
-  });
-
-  let bookUrl = null;
-
-  try {
-    console.log(`Searching for book with ISBN: ${isbn}`);
-    const searchFormInput = await page.waitForSelector(
-      `div[id="searchBox"] input[type="text"]`
-    );
-    await searchFormInput.type(isbn);
-
-    await Promise.all([page.waitForNavigation(), page.keyboard.press("Enter")]);
-    bookUrl = await page.evaluate(() => document.location.href);
-    await browser.close();
-  } catch (e) {
-    console.log("Error fetching Goodreads book URL", e);
-    throw Error("Error fetching Goodreads book URL");
-  }
-
   let content = null;
+  const bookSearchUrl = `https://www.goodreads.com/search/?q=${isbn}`;
 
-  console.log(`Book url found: ${bookUrl}`);
+  console.log(`Fetching XML for ISBN: ${isbn}`);
   try {
-    content = await fetch(bookUrl).then((response) => response.text());
+    content = await fetch(bookSearchUrl).then((response) => response.text());
   } catch {
     throw Error("Error retrieving URL content");
   }
@@ -64,9 +43,11 @@ export default async function getBookDetails(
   const $ = cheerio.load(content);
   const head = $("head");
 
-  const jsonLdTags = [];
+  const bookUrl = head.find('link[rel="canonical"]').attr("href");
+  console.log(`Book url found: ${bookUrl}`);
 
   console.log("Retrieving book schema...");
+  const jsonLdTags = [];
   head.find('script[type="application/ld+json"]').each((_, jsonLdTag) => {
     jsonLdTag.children.forEach((el) => {
       jsonLdTags.push((el as any).data);
