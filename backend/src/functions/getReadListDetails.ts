@@ -28,8 +28,6 @@ const controller = async (
 
   const pages = pagesThatIncludeDatabaseIds.filter((page) => !page.archived);
 
-  console.log("hii pages", pages);
-
   return makeResultResponse({ pages });
 };
 

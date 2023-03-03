@@ -39,10 +39,6 @@ const controller = async (
       await page.waitForSelector("popUpModalCloseButtonSelector", {
         timeout: 50,
       });
-      console.log(
-        "hii page popUpModalCloseButtonSelector?",
-        popUpModalCloseButtonSelector
-      );
       await page.click(popUpModalCloseButtonSelector);
     } catch {
       // do nothing
