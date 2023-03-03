@@ -7,9 +7,14 @@ export type ValidatedAPIGatewayProxyEvent<B> = Omit<
   body: B;
 };
 
-export const makeResultResponse = (response): APIGatewayProxyResult => {
+type StatusCode = 200 | 400 | 403 | 401;
+
+export const makeResultResponse = (
+  response: any,
+  statusCode: StatusCode = 200
+): APIGatewayProxyResult => {
   return {
-    statusCode: 200,
+    statusCode,
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": true,

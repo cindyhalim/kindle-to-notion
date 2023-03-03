@@ -43,6 +43,25 @@ export const handlerFunctions: Serverless["functions"] = {
       },
     ],
   },
+  getBookDetails: {
+    handler: "src/functions/getBookDetails.handler",
+    events: [
+      {
+        http: {
+          method: "get",
+          path: "/book",
+          cors: true,
+          request: {
+            parameters: {
+              querystrings: {
+                isbn: true,
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
   getBooksWithMissingInfo: {
     handler: "src/functions/getBooksWithMissingInfo.handler",
     events: [

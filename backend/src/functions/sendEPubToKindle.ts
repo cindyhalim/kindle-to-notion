@@ -11,7 +11,7 @@ import {
 } from "../libs/apiGateway";
 import { mailer } from "@libs/mailer";
 import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getEmailsDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
+import { getEmailsDatabaseIdMiddleware } from "src/middlewares/getEmailsDatabaseId";
 const controller = async (
   event: ValidatedAPIGatewayProxyEvent<{
     uploadKey: string;

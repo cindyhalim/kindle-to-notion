@@ -5,7 +5,7 @@ import Notion from "src/api/notion";
 import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
 import { RawReadingListProperties } from "src/api/notion/types";
 import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getReadListDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
+import { getReadListDatabaseIdMiddleware } from "src/middlewares/getReadListDatabaseId";
 import {
   makeResultResponse,
   ValidatedAPIGatewayProxyEvent,

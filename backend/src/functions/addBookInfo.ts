@@ -8,7 +8,7 @@ import {
   ValidatedAPIGatewayProxyEvent,
 } from "../libs/apiGateway";
 import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getReadListDatabaseIdMiddleware } from "src/middlewares/notion-database-middleware";
+import { getReadListDatabaseIdMiddleware } from "src/middlewares/getReadListDatabaseId";
 import { Context } from "aws-lambda";
 
 const stepFunctions = new StepFunctions();
