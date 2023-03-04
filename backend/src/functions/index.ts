@@ -43,6 +43,25 @@ export const handlerFunctions: Serverless["functions"] = {
       },
     ],
   },
+  saveBookToNotion: {
+    handler: "src/functions/saveBookToNotion.handler",
+    events: [
+      {
+        http: {
+          method: "put",
+          path: "/read-list/{databaseId}/book",
+          cors: true,
+          request: {
+            parameters: {
+              paths: {
+                databaseId: true,
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
   getBookDetails: {
     handler: "src/functions/getBookDetails.handler",
     events: [

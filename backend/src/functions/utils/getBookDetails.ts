@@ -27,6 +27,10 @@ type BookDetails = {
   coverUrl: string;
 };
 
+function formatBookTitle(rawTitle: string) {
+  return rawTitle.replace("&apos;", "'");
+}
+
 export default async function getBookDetails(
   isbn: string
 ): Promise<BookDetails> {
@@ -87,7 +91,7 @@ export default async function getBookDetails(
 
   return {
     isbn,
-    title: parsedBookSchema.name,
+    title: formatBookTitle(parsedBookSchema.name),
     author,
     goodreadsUrl: bookUrl,
     pages: `${parsedBookSchema.numberOfPages}`,
