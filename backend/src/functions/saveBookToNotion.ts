@@ -31,12 +31,11 @@ const controller = async (
   context: SaveBookToNotionContext
 ) => {
   const { accessToken } = context;
-  const { isbn, title, author, pages, genres, coverUrl, goodreadsUrl } =
-    event.body;
   const { databaseId } = event.pathParameters;
 
   const client = new Notion({ accessToken });
 
+  console.log(`Looking up existing page for database ID: ${databaseId}`);
   const { pages: existingBookEntries } =
     await client.getPages<RawReadingListProperties>({
       databaseId,
@@ -45,7 +44,7 @@ const controller = async (
           {
             property: READING_LIST_PROPERTIES["isbn"].name,
             rich_text: {
-              equals: isbn,
+              equals: event.body.isbn,
             },
           },
           {
@@ -53,13 +52,13 @@ const controller = async (
               {
                 property: READING_LIST_PROPERTIES["title"].name,
                 rich_text: {
-                  contains: title,
+                  contains: event.body.title,
                 },
               },
               {
                 property: READING_LIST_PROPERTIES["author"].name,
                 rich_text: {
-                  contains: author,
+                  contains: event.body.author,
                 },
               },
             ],
@@ -71,37 +70,38 @@ const controller = async (
   const properties: NotionPropertyData<RawReadingListProperties>[] = [
     {
       name: "title",
-      value: title,
+      value: event.body.title,
     },
-    { name: "author", value: author },
+    { name: "author", value: event.body.author },
 
     {
       name: "genres",
-      value: genres,
+      value: event.body.genres,
     },
     {
       name: "isbn",
-      value: isbn,
+      value: event.body.isbn,
     },
     {
       name: "pages",
-      value: pages,
+      value: Number(event.body.pages),
     },
-    ...(coverUrl && [
+    ...(event.body.coverUrl && [
       {
         name: "book cover" as const,
-        value: coverUrl,
+        value: event.body.coverUrl,
       },
     ]),
-    ...(goodreadsUrl && [
+    ...(event.body.goodreadsUrl && [
       {
         name: "goodreads link" as const,
-        value: goodreadsUrl,
+        value: event.body.goodreadsUrl,
       },
     ]),
   ];
 
   if (!existingBookEntries.length) {
+    console.log("No existing book found... creating new page");
     try {
       const { id, url } =
         await client.addPageToReadListDatabase<RawReadingListProperties>({
@@ -124,6 +124,7 @@ const controller = async (
   }
 
   // update existing page properties if it exists
+  console.log("Existing book found... updating page");
   let pageId = existingBookEntries[0].id;
   let pageUrl = null;
   try {
