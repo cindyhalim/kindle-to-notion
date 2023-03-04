@@ -1,14 +1,14 @@
 import { Client } from "@notionhq/client";
-import type {
+import {
   GetDatabaseResponse,
   QueryDatabaseParameters,
 } from "@notionhq/client/build/src/api-endpoints";
 import { READING_LIST_PROPERTIES } from "./constants";
 import {
-  type IAddClippingsToPagePayload,
-  type NotionPropertyData,
+  IAddClippingsToPagePayload,
+  NotionPropertyData,
   Properties,
-  type RawDatabaseQueryPageResult,
+  RawDatabaseQueryPageResult,
 } from "./types";
 
 export default class Notion {
