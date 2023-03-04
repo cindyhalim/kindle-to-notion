@@ -25,7 +25,9 @@ export const validateReadListDatabaseIdMiddleware = <
 
       const databaseInfo = await client.getDatabaseInfo(databaseId);
 
-      if (databaseInfo["title"]?.plain_text !== client.readListDatabaseTitle) {
+      if (
+        databaseInfo["title"]?.[0]?.plain_text !== client.readListDatabaseTitle
+      ) {
         const error = createError(
           403,
           "Database ID does not correpond to a read list database"

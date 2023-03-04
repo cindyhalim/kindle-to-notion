@@ -22,9 +22,6 @@ type SaveBookToNotionBody = {
   genre: string[];
   coverUrl: string;
   goodreadsUrl: string;
-  settings: {
-    useLowerCase: boolean;
-  };
 };
 
 type SaveBookToNotionContext = Context & { accessToken: string };
@@ -77,22 +74,31 @@ const controller = async (
       value: title,
     },
     { name: "author", value: author },
-    {
-      name: "book cover",
-      value: coverUrl,
-    },
+
     {
       name: "genre",
       value: genre,
     },
     {
+      name: "isbn",
+      value: isbn,
+    },
+    {
       name: "pages",
       value: pages,
     },
-    {
-      name: "goodreads link",
-      value: goodreadsUrl,
-    },
+    ...(coverUrl && [
+      {
+        name: "book cover" as const,
+        value: coverUrl,
+      },
+    ]),
+    ...(goodreadsUrl && [
+      {
+        name: "goodreads link" as const,
+        value: goodreadsUrl,
+      },
+    ]),
   ];
 
   if (!existingBookEntries.length) {

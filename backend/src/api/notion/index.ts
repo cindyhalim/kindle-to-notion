@@ -109,7 +109,7 @@ export default class Notion {
     try {
       const response = await this.client.databases.query({
         database_id: databaseId,
-        ...filter,
+        filter,
       });
       const pages = response?.results as RawDatabaseQueryPageResult<T>[];
 
