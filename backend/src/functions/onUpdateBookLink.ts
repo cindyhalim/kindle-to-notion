@@ -1,9 +1,8 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import Notion from "src/api/notion";
-import {
+import type {
   NotionPropertyData,
-  Properties,
   RawReadingListProperties,
 } from "src/api/notion/types";
 import type {
@@ -20,12 +19,11 @@ const controller = async (event: IUpdateBookLinkEvent) => {
   const { pageId, url, token } = event;
 
   try {
-    const propertyData: NotionPropertyData<RawReadingListProperties>[] = [
+    const properties: NotionPropertyData<RawReadingListProperties>[] = [
       ...(url.ePub && [
         {
-          propertyName: "epub link" as const,
-          propertyType: Properties.URL,
-          data: url.ePub,
+          name: "epub link" as const,
+          value: url.ePub,
         },
       ]),
     ];
@@ -34,7 +32,7 @@ const controller = async (event: IUpdateBookLinkEvent) => {
     const response =
       await notion.updatePageProperties<RawReadingListProperties>({
         pageId,
-        payload: propertyData,
+        properties,
       });
     return makeResultResponse({ response });
   } catch (e) {

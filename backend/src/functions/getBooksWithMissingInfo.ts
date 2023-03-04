@@ -21,11 +21,19 @@ const controller = async (
     }).getPages<RawReadingListProperties>({
       databaseId,
       filter: {
-        operator: "or",
-        propertiesMap: READING_LIST_PROPERTIES,
-        values: [
-          { property: "has epub link", value: false },
-          { property: "has details", value: false },
+        or: [
+          {
+            property: READING_LIST_PROPERTIES["has epub link"].name,
+            checkbox: {
+              equals: false,
+            },
+          },
+          {
+            property: READING_LIST_PROPERTIES["has details"].name,
+            checkbox: {
+              equals: false,
+            },
+          },
         ],
       },
     });

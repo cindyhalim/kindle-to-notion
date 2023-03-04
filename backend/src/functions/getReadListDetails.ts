@@ -14,7 +14,9 @@ const controller = async (
   const { accessToken } = context;
   const client = new Notion({ accessToken });
 
-  const readListDatabaseIds = await client.getDatabaseIds("read list");
+  const readListDatabaseIds = await client.getDatabaseIds(
+    client.readListDatabaseTitle
+  );
 
   const pagesThatIncludeDatabaseIds = await Promise.all(
     readListDatabaseIds.map(async (readDatabase) => {

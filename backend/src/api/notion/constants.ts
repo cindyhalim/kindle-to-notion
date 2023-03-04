@@ -3,11 +3,19 @@ import { RawReadingListProperties } from "./types";
 export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   "epub link": {
     id: "%3AAZZ",
+    name: "epub link",
+    type: "url",
+    url: "",
+  },
+  "goodreads link": {
+    id: "w%3Dx%3A",
+    name: "goodreads link",
     type: "url",
     url: "",
   },
   "has details": {
     id: "ReeY",
+    name: "has details",
     type: "formula",
     formula: {
       type: "boolean",
@@ -16,6 +24,7 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   },
   genre: {
     id: "STsA",
+    name: "genre",
     type: "multi_select",
     multi_select: [
       {
@@ -27,11 +36,13 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   },
   read: {
     id: "V%60Fq",
+    name: "read",
     type: "checkbox",
     checkbox: false,
   },
   "book cover": {
     id: "%5CUEL",
+    name: "book cover",
     type: "files",
     files: [
       {
@@ -45,6 +56,7 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   },
   "has epub link": {
     id: "%5Etn%40",
+    name: "has epub link",
     type: "formula",
     formula: {
       type: "boolean",
@@ -53,6 +65,7 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   },
   author: {
     id: "bokz",
+    name: "author",
     type: "rich_text",
     rich_text: [
       {
@@ -68,16 +81,19 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   },
   pages: {
     id: "drf%3E",
-    type: "rich_text",
-    rich_text: [],
+    name: "pages",
+    type: "number",
+    number: 0,
   },
   "date finished": {
     id: "gGRt",
+    name: "date finished",
     type: "date",
     date: null,
   },
   isbn: {
     id: "xEOE",
+    name: "isbn",
     type: "rich_text",
     rich_text: [
       {
@@ -94,6 +110,7 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
   title: {
     id: "title",
     type: "title",
+    name: "title",
     title: [
       {
         type: "text",

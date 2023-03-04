@@ -69,14 +69,14 @@ const controller = async (
         `No page found for ${item.title} - ${item.author}, creating new one`
       );
 
-      const newPage = await notion.addPage<RawReadingListProperties>({
-        databaseId,
-        propertiesMap: READING_LIST_PROPERTIES,
-        textProperties: [
-          { key: "title", value: item.title },
-          { key: "author", value: item.author },
-        ],
-      });
+      const newPage =
+        await notion.addPageToReadListDatabase<RawReadingListProperties>({
+          databaseId,
+          properties: [
+            { name: "title", value: item.title },
+            { name: "author", value: item.author },
+          ],
+        });
 
       pageId = newPage.id;
     }

@@ -1,18 +1,23 @@
 import { Client } from "@notionhq/client";
+import type {
+  GetDatabaseResponse,
+  QueryDatabaseParameters,
+} from "@notionhq/client/build/src/api-endpoints";
+import { READING_LIST_PROPERTIES } from "./constants";
 import {
-  Filter,
-  IAddClippingsToPagePayload,
-  NotionFilter,
-  NotionPropertyData,
+  type IAddClippingsToPagePayload,
+  type NotionPropertyData,
   Properties,
-  RawDatabaseQueryPageResult,
+  type RawDatabaseQueryPageResult,
 } from "./types";
 
 export default class Notion {
   protected client: Client;
+  public readListDatabaseTitle: string;
 
   constructor({ accessToken }: { accessToken: string }) {
     this.client = new Client({ auth: accessToken });
+    this.readListDatabaseTitle = "read list";
   }
 
   public getDatabaseIds = async (
@@ -26,6 +31,14 @@ export default class Notion {
       id: result.id,
       pageId: result["parent"].page_id,
     }));
+  };
+
+  public getDatabaseInfo = async (
+    databaseId: string
+  ): Promise<GetDatabaseResponse> => {
+    return await this.client.databases.retrieve({
+      database_id: databaseId,
+    });
   };
 
   public getPageInfo = async (
@@ -46,25 +59,25 @@ export default class Notion {
     };
   };
 
-  public addPage = async <T>(params: {
+  public addPageToReadListDatabase = async <T>(params: {
     databaseId: string;
-    propertiesMap: Record<keyof T, any>;
-    textProperties: {
-      key: keyof T;
-      value: string;
+    properties: {
+      name: keyof T;
+      value: string | number | string[];
     }[];
   }) => {
-    const { databaseId, propertiesMap, textProperties: properties } = params;
+    const propertiesMap = READING_LIST_PROPERTIES as Record<keyof T, any>;
+    const { databaseId, properties } = params;
 
     try {
       const propertiesBody = properties.reduce((prev, curr) => {
-        const propertyType = propertiesMap[curr.key].type;
+        const propertyType = propertiesMap[curr.name].type;
         const content = this._formatToNotionPropeties(propertyType, curr.value);
 
         if (content) {
           return {
             ...prev,
-            [curr.key]: content,
+            [curr.name]: content,
           };
         }
         return { ...prev };
@@ -84,20 +97,19 @@ export default class Notion {
     }
   };
 
-  public getPages = async <T extends unknown>(params: {
+  public getPages = async <T extends unknown>({
+    databaseId,
+    filter,
+  }: {
     databaseId: string;
-    filter: Filter<T>;
+    filter: QueryDatabaseParameters["filter"];
   }): Promise<{
     pages: RawDatabaseQueryPageResult<T>[];
   }> => {
-    const { databaseId } = params;
     try {
       const response = await this.client.databases.query({
         database_id: databaseId,
-        ...(params.filter &&
-          ({
-            filter: this._transformFilterToNotion<T>(params.filter),
-          } as Record<string, unknown>)),
+        ...filter,
       });
       const pages = response?.results as RawDatabaseQueryPageResult<T>[];
 
@@ -115,28 +127,29 @@ export default class Notion {
 
   public updatePageProperties = async <T>({
     pageId,
-    payload,
+    properties,
   }: {
     pageId: string;
-    payload: NotionPropertyData<T>[];
+    properties: NotionPropertyData<T>[];
   }) => {
-    if (!payload.length) {
+    if (!properties.length) {
       console.log("Nothing to update, returning early...");
       return;
     }
-    const properties = payload.reduce(
-      (prev, { propertyName, propertyType, data }) => {
-        return {
-          ...prev,
-          [propertyName]: this._formatToNotionPropeties(propertyType, data),
-        };
-      },
-      {}
-    );
+
+    const propertiesMap = READING_LIST_PROPERTIES as Record<keyof T, any>;
+    const formattedProperties = properties.reduce((prev, { name, value }) => {
+      const propertyType = propertiesMap[name].type;
+
+      return {
+        ...prev,
+        [name]: this._formatToNotionPropeties(propertyType, value),
+      };
+    }, {});
 
     const response = await this.client.pages.update({
       page_id: pageId,
-      properties,
+      properties: formattedProperties,
     });
 
     return { id: response.id };
@@ -254,29 +267,5 @@ export default class Notion {
       default:
         return null;
     }
-  };
-
-  // transform CHECKBOX properties to notion filter query
-  private _transformFilterToNotion = <T>({
-    operator,
-    values: filterValues,
-    propertiesMap,
-  }: Filter<T>): NotionFilter<T> => {
-    const filterablePropertyTypes = ["checkbox", "formula"];
-    const filterableProperties = filterValues.filter((filter) =>
-      filterablePropertyTypes.includes(propertiesMap[filter.property]?.type)
-    );
-    if (!filterableProperties.length) {
-      return null;
-    }
-
-    return {
-      [operator]: filterableProperties.map((filter) => ({
-        property: filter.property,
-        checkbox: {
-          equals: filter.value,
-        },
-      })),
-    };
   };
 }

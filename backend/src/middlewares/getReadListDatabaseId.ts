@@ -25,7 +25,9 @@ export const getReadListDatabaseIdMiddleware = <B>(): middy.MiddlewareObject<
 
       const client = new Notion({ accessToken });
 
-      const readListDatabaseIds = await client.getDatabaseIds("read list");
+      const readListDatabaseIds = await client.getDatabaseIds(
+        client.readListDatabaseTitle
+      );
 
       if (!readListDatabaseIds.length) {
         const error = createError(404, "Could not find Notion databases");

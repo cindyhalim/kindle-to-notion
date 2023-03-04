@@ -23,12 +23,20 @@ export type RawDatabaseQueryGenericResult = {
 
 export type RawReadingListProperties = {
   "epub link": {
+    name: "epub link";
     id: "%3AAZZ";
+    type: "url";
+    url: string | null;
+  };
+  "goodreads link": {
+    id: "w%3Dx%3A";
+    name: "goodreads link";
     type: "url";
     url: string | null;
   };
   "has details": {
     id: "ReeY";
+    name: "has details";
     type: "formula";
     formula: {
       type: "boolean";
@@ -37,16 +45,19 @@ export type RawReadingListProperties = {
   };
   genre: {
     id: "STsA";
+    name: "genre";
     type: "multi_select";
     multi_select: { id: string; name: string; color: string }[];
   };
   read: {
     id: "V%60Fq";
+    name: "read";
     type: "checkbox";
     checkbox: boolean;
   };
   "book cover": {
     id: "%5CUEL";
+    name: "book cover";
     type: "files";
     files:
       | {
@@ -60,6 +71,7 @@ export type RawReadingListProperties = {
   };
   "has epub link": {
     id: "%5Etn%40";
+    name: "has epub link";
     type: "formula";
     formula: {
       type: "boolean";
@@ -68,6 +80,7 @@ export type RawReadingListProperties = {
   };
   author: {
     id: "bokz";
+    name: "author";
     type: "rich_text";
     rich_text: {
       type: "text";
@@ -80,6 +93,7 @@ export type RawReadingListProperties = {
     }[];
   };
   isbn: {
+    name: "isbn";
     id: "xEOE";
     type: "rich_text";
     rich_text: {
@@ -93,18 +107,21 @@ export type RawReadingListProperties = {
     }[];
   };
   pages: {
+    name: "pages";
     id: "drf%3E";
     type: "number";
     number: number | null;
   };
   "date finished": {
     id: "gGRt";
+    name: "date finished";
     type: "date";
     date: string | null;
   };
   title: {
     id: "title";
     type: "title";
+    name: "title";
     title: {
       type: "text";
       text: {
@@ -152,26 +169,9 @@ export enum Properties {
 }
 
 export interface NotionPropertyData<T> {
-  propertyType: Properties;
-  propertyName: keyof T;
-  data: unknown;
+  name: keyof T;
+  value: string | number | string[];
 }
-
-type NotionFilterOperator = "and" | "or";
-export type Filter<T> = {
-  propertiesMap: Record<keyof T, any>;
-  operator: NotionFilterOperator;
-  values: { property: keyof T; value: boolean }[];
-};
-
-export type NotionFilter<T> = {
-  [key: string]: {
-    property: keyof T;
-    checkbox: {
-      equals: boolean;
-    };
-  }[];
-};
 
 export type RawDatabaseQueryPageResult<T> = RawDatabaseQueryGenericResult & {
   properties: T;
