@@ -61,7 +61,7 @@ const controller = async (
     const pages = pageCount.match(digitsOnlyRegex).join("");
 
     console.log("Getting genre");
-    const genre = await page.$$eval(
+    const genres = await page.$$eval(
       'span.BookPageMetadataSection__genreButton > a[href^="/genres/"]',
       (genres: HTMLSpanElement[]) =>
         genres.map((genre) => genre?.innerText?.toLowerCase())
@@ -69,10 +69,10 @@ const controller = async (
 
     await browser.close();
 
-    console.log("Returning book details", { pageCount, genre, coverUrl });
+    console.log("Returning book details", { pageCount, genres, coverUrl });
     return {
       pages,
-      genre,
+      genres,
       coverUrl: coverUrl,
     };
   } catch (e) {

@@ -23,7 +23,7 @@ type BookDetails = {
   author: string;
   goodreadsUrl: string;
   pages: string;
-  genre: string[];
+  genres: string[];
   coverUrl: string;
 };
 
@@ -95,7 +95,7 @@ export default async function getBookDetails(
     author,
     goodreadsUrl: bookUrl,
     pages: `${parsedBookSchema.numberOfPages}`,
-    genre: formattedGenres.slice(0, 3),
+    genres: formattedGenres.slice(0, 3),
     coverUrl: parsedBookSchema.image,
   };
 }

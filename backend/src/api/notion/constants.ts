@@ -22,9 +22,9 @@ export const READING_LIST_PROPERTIES: RawReadingListProperties = {
       boolean: false,
     },
   },
-  genre: {
+  genres: {
     id: "STsA",
-    name: "genre",
+    name: "genres",
     type: "multi_select",
     multi_select: [
       {

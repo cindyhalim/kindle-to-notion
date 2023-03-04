@@ -20,11 +20,11 @@ const controller = async (event: IUpdateBookDetailsEvent) => {
 
   try {
     const properties: NotionPropertyData<RawReadingListProperties>[] = [
-      ...(details.genre.length
+      ...(details.genres.length
         ? [
             {
-              name: "genre" as const,
-              value: details.genre,
+              name: "genres" as const,
+              value: details.genres,
             },
           ]
         : []),

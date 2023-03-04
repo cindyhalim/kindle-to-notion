@@ -65,7 +65,7 @@ const AuthenticatedHomeContent = () => {
       route: RoutesEnum.PRETTIFY,
       emoji: "✨",
       description:
-        "get book details, such as book cover and genre, as well as a link to download epub",
+        "get book details, such as book cover and genres, as well as a link to download epub",
     },
     {
       text: "epub to kindle",

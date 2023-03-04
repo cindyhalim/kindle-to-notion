@@ -65,7 +65,7 @@ export default class Notion {
       name: keyof T;
       value: string | number | string[];
     }[];
-  }) => {
+  }): Promise<{ id: string; url: string | null }> => {
     const propertiesMap = READING_LIST_PROPERTIES as Record<keyof T, any>;
     const { databaseId, properties } = params;
 
@@ -91,7 +91,7 @@ export default class Notion {
       };
 
       const response = await this.client.pages.create(body);
-      return { id: response.id };
+      return { id: response.id, url: response["url"] || null };
     } catch (e) {
       throw e;
     }
@@ -131,7 +131,7 @@ export default class Notion {
   }: {
     pageId: string;
     properties: NotionPropertyData<T>[];
-  }) => {
+  }): Promise<{ id: string; url: string | null }> => {
     if (!properties.length) {
       console.log("Nothing to update, returning early...");
       return;
@@ -152,7 +152,7 @@ export default class Notion {
       properties: formattedProperties,
     });
 
-    return { id: response.id };
+    return { id: response.id, url: response["url"] || null };
   };
 
   public appendClippingsToPage = async (params: {

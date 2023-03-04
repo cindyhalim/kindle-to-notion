@@ -43,9 +43,9 @@ export type RawReadingListProperties = {
       boolean: boolean;
     };
   };
-  genre: {
+  genres: {
     id: "STsA";
-    name: "genre";
+    name: "genres";
     type: "multi_select";
     multi_select: { id: string; name: string; color: string }[];
   };

@@ -19,7 +19,7 @@ type SaveBookToNotionBody = {
   title: string;
   author: string;
   pages: string;
-  genre: string[];
+  genres: string[];
   coverUrl: string;
   goodreadsUrl: string;
 };
@@ -31,7 +31,7 @@ const controller = async (
   context: SaveBookToNotionContext
 ) => {
   const { accessToken } = context;
-  const { isbn, title, author, pages, genre, coverUrl, goodreadsUrl } =
+  const { isbn, title, author, pages, genres, coverUrl, goodreadsUrl } =
     event.body;
   const { databaseId } = event.pathParameters;
 
@@ -76,8 +76,8 @@ const controller = async (
     { name: "author", value: author },
 
     {
-      name: "genre",
-      value: genre,
+      name: "genres",
+      value: genres,
     },
     {
       name: "isbn",
@@ -103,13 +103,14 @@ const controller = async (
 
   if (!existingBookEntries.length) {
     try {
-      const { id } =
+      const { id, url } =
         await client.addPageToReadListDatabase<RawReadingListProperties>({
           databaseId,
           properties,
         });
       return makeResultResponse({
         pageId: id,
+        pageUrl: url,
       });
     } catch (e) {
       console.log("Error adding new page to read list", e);
@@ -123,13 +124,16 @@ const controller = async (
   }
 
   // update existing page properties if it exists
-  const pageId = existingBookEntries[0].id;
-
+  let pageId = existingBookEntries[0].id;
+  let pageUrl = null;
   try {
-    await client.updatePageProperties<RawReadingListProperties>({
-      pageId,
-      properties,
-    });
+    const { url } = await client.updatePageProperties<RawReadingListProperties>(
+      {
+        pageId,
+        properties,
+      }
+    );
+    pageUrl = url;
   } catch (e) {
     console.log("Error updating page with book details", e);
     return makeResultResponse(
@@ -142,6 +146,7 @@ const controller = async (
 
   return makeResultResponse({
     pageId,
+    pageUrl,
   });
 };
 

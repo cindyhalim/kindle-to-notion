@@ -12,7 +12,7 @@ export interface IGetBookInfoPayload {
 
 export interface IGetBookDetailsOutput {
   pages?: string;
-  genre?: string[];
+  genres?: string[];
   coverUrl?: string;
   status?: string;
 }
