@@ -34,8 +34,12 @@ function validateISBN13(possibleISBN13: string) {
     }
   }
   const remainder = sumOfWeights % 10;
-  const correctCheckDigit = 10 - remainder;
 
+  if (remainder === 0) {
+    return true;
+  }
+
+  const correctCheckDigit = 10 - remainder;
   return Number(checkDigit) === correctCheckDigit;
 }
 
