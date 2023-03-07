@@ -2,7 +2,7 @@ import { makeResultResponse } from "../libs/apiGateway";
 import type { APIGatewayProxyEvent } from "aws-lambda";
 import getBookDetails from "./utils/getBookDetails";
 
-const isbn13RegExp = new RegExp(/\d{13}/, "g");
+const isbn13RegExp = new RegExp(/\d{13}/);
 
 /**
  * Check if given string is a valid ISBN-13 based on
@@ -11,17 +11,15 @@ const isbn13RegExp = new RegExp(/\d{13}/, "g");
  * @returns boolean
  */
 function validateISBN13(possibleISBN13: string) {
-  if (!isbn13RegExp.test(possibleISBN13)) {
+  const is13Digits = isbn13RegExp.test(possibleISBN13);
+
+  if (!is13Digits) {
     return false;
   }
-  // strip all dash and spaces
-  const cleanedPossibleISBN13 = possibleISBN13
-    .replace("-", "")
-    .replace(" ", "");
 
-  const checkDigitIndex = cleanedPossibleISBN13.length - 1;
-  const checkDigit = cleanedPossibleISBN13[checkDigitIndex];
-  const restOfDigits = cleanedPossibleISBN13.slice(0, checkDigitIndex);
+  const checkDigitIndex = possibleISBN13.length - 1;
+  const checkDigit = possibleISBN13[checkDigitIndex];
+  const restOfDigits = possibleISBN13.slice(0, checkDigitIndex);
 
   // evaluate ISBN13:
   let sumOfWeights = 0;

@@ -21,6 +21,7 @@ const serverlessConfiguration: Serverless = {
     name: "aws",
     runtime: "nodejs14.x",
     region: "us-east-2",
+    versionFunctions: false,
     timeout: 30,
     apiGateway: {
       minimumCompressionSize: 1024,
