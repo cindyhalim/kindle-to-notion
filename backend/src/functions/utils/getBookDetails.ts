@@ -8,6 +8,7 @@ type BookSchemaJsonLd = {
   image: string;
   numberOfPages: number;
   isbn: string;
+  inLanguage: "English";
   author: [
     {
       "@type": "Person";
@@ -58,10 +59,13 @@ export default async function getBookDetails(
     });
   });
 
-  const SCHEMA_KEY_VALUE_PAIR = `"@context":"https://schema.org"`;
-  const bookSchema = jsonLdTags.find((jsonLdTag) =>
-    jsonLdTag.includes(SCHEMA_KEY_VALUE_PAIR)
-  );
+  const bookSchema = jsonLdTags.find((jsonLdTag) => {
+    const parsed: BookSchemaJsonLd = JSON.parse(jsonLdTag);
+    return (
+      parsed["@context"] === "https://schema.org" &&
+      parsed.inLanguage === "English"
+    );
+  });
 
   if (!bookSchema) {
     throw Error("Cannot find book schema");
