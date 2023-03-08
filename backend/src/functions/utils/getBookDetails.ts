@@ -29,7 +29,7 @@ type BookDetails = {
 };
 
 function formatBookTitle(rawTitle: string) {
-  return rawTitle.replace("&apos;", "'");
+  return rawTitle.replace(/&apos;/g, "'").replace(/&amp;/g, "&");
 }
 
 export default async function getBookDetails(
