@@ -25,6 +25,10 @@ export default class Notion {
   ): Promise<{ id: string; pageId: string }[] | null> => {
     const database = await this.client.search({
       query: databaseName,
+      filter: {
+        value: "database",
+        property: "object",
+      },
     });
 
     return database.results.map((result) => ({
@@ -69,32 +73,28 @@ export default class Notion {
     const propertiesMap = READING_LIST_PROPERTIES as Record<keyof T, any>;
     const { databaseId, properties } = params;
 
-    try {
-      const propertiesBody = properties.reduce((prev, curr) => {
-        const propertyType = propertiesMap[curr.name].type;
-        const content = this._formatToNotionPropeties(propertyType, curr.value);
+    const propertiesBody = properties.reduce((prev, curr) => {
+      const propertyType = propertiesMap[curr.name].type;
+      const content = this._formatToNotionPropeties(propertyType, curr.value);
 
-        if (content) {
-          return {
-            ...prev,
-            [curr.name]: content,
-          };
-        }
-        return { ...prev };
-      }, {});
+      if (content) {
+        return {
+          ...prev,
+          [curr.name]: content,
+        };
+      }
+      return { ...prev };
+    }, {});
 
-      const body = {
-        parent: {
-          database_id: databaseId,
-        },
-        properties: propertiesBody,
-      };
+    const body = {
+      parent: {
+        database_id: databaseId,
+      },
+      properties: propertiesBody,
+    };
 
-      const response = await this.client.pages.create(body);
-      return { id: response.id, url: response["url"] || null };
-    } catch (e) {
-      throw e;
-    }
+    const response = await this.client.pages.create(body);
+    return { id: response.id, url: response["url"] || null };
   };
 
   public getPages = async <T extends unknown>({
