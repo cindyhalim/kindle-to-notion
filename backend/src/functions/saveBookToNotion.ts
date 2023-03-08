@@ -84,7 +84,7 @@ const controller = async (
     },
     {
       name: "pages",
-      value: Number(event.body.pages),
+      value: event.body.pages ? Number(event.body.pages) : null,
     },
     ...(event.body.coverUrl && [
       {

@@ -61,10 +61,9 @@ export default async function getBookDetails(
 
   const bookSchema = jsonLdTags.find((jsonLdTag) => {
     const parsed: BookSchemaJsonLd = JSON.parse(jsonLdTag);
-    return (
-      parsed["@context"] === "https://schema.org" &&
-      parsed.inLanguage === "English"
-    );
+    const isEnglish =
+      "inLanguage" in parsed ? parsed.inLanguage === "English" : true;
+    return parsed["@context"] === "https://schema.org" && isEnglish;
   });
 
   if (!bookSchema) {
@@ -98,7 +97,9 @@ export default async function getBookDetails(
     title: formatBookTitle(parsedBookSchema.name),
     author,
     goodreadsUrl: bookUrl,
-    pages: `${parsedBookSchema.numberOfPages}`,
+    pages: parsedBookSchema.numberOfPages
+      ? `${parsedBookSchema.numberOfPages}`
+      : null,
     genres: formattedGenres.slice(0, 3),
     coverUrl: parsedBookSchema.image,
   };
