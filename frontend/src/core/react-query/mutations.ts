@@ -12,7 +12,7 @@ const baseUrl = config.serviceUrl;
 export const authenticate = async ({ code }: { code: string }) => {
   const payload = { code };
   const response: AxiosResponse<{ accessToken: string }> = await axios.post(
-    `${baseUrl}/authenticate`,
+    `${baseUrl}/authenticate/?mode=web`,
     payload
   );
 
