@@ -61,9 +61,7 @@ export default async function getBookDetails(
 
   const bookSchema = jsonLdTags.find((jsonLdTag) => {
     const parsed: BookSchemaJsonLd = JSON.parse(jsonLdTag);
-    const isEnglish =
-      "inLanguage" in parsed ? parsed.inLanguage === "English" : true;
-    return parsed["@context"] === "https://schema.org" && isEnglish;
+    return parsed["@context"] === "https://schema.org";
   });
 
   if (!bookSchema) {
