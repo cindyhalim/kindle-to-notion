@@ -5,15 +5,9 @@ import { handlerFunctions } from "./src/functions";
 
 const serverlessConfiguration: Serverless = {
   service: "kindle-to-notion",
-  frameworkVersion: "2",
-  custom: {
-    webpack: {
-      webpackConfig: "./webpack.config.js",
-      includeModules: true,
-    },
-  },
+  frameworkVersion: "3",
   plugins: [
-    "serverless-webpack",
+    "serverless-esbuild",
     "serverless-step-functions",
     "serverless-iam-roles-per-function",
   ],
@@ -22,7 +16,6 @@ const serverlessConfiguration: Serverless = {
     runtime: "nodejs14.x",
     region: "us-east-2",
     versionFunctions: false,
-    timeout: 30,
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -36,7 +29,7 @@ const serverlessConfiguration: Serverless = {
       EXTENSION_NOTION_CLIENT_SECRET:
         "${ssm:/kindle-to-notion/extension-notion-client-secret}",
       CLIENT_URL: "https://notion-kindle.netlify.app",
-      KINDLE_NOTION_BUCKET_NAME: "${self:service.name}",
+      KINDLE_NOTION_BUCKET_NAME: "${self:service}",
       MAILER_USERNAME: "${ssm:/kindle-to-notion/transporter-email}",
       MAILER_PASSWORD: "${ssm:/kindle-to-notion/transporter-password}",
       MAILER_CLIENT_ID: "${ssm:/kindle-to-notion/transporter-client-id}",
