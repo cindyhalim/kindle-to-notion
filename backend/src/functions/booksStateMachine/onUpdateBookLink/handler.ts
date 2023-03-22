@@ -1,5 +1,3 @@
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
 import Notion from "src/api/notion";
 import type {
   NotionPropertyData,
@@ -8,10 +6,11 @@ import type {
 import { makeResultResponse } from "@libs/apiGateway";
 
 import type { GetBookInfoInput, GetBookLinkOutput } from "../types";
+import { middyfy } from "@libs/lambda";
 
 type UpdateBookLinkInput = GetBookInfoInput & { url: GetBookLinkOutput };
 
-const controller = async (input: UpdateBookLinkInput) => {
+const onUpdateBookLink = async (input: UpdateBookLinkInput) => {
   const { pageId, url, token } = input;
 
   try {
@@ -36,4 +35,4 @@ const controller = async (input: UpdateBookLinkInput) => {
   }
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const handler = middyfy(onUpdateBookLink);

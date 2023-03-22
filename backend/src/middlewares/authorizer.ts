@@ -1,16 +1,21 @@
-import type { APIGatewayProxyResult } from "aws-lambda";
+import type {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from "aws-lambda";
 import middy from "@middy/core";
 import { createError } from "@middy/util";
-import type { ValidatedAPIGatewayProxyEvent } from "@libs/apiGateway";
 
-type Context = { accessToken: string };
+export type ContextWithToken = Context & { accessToken: string };
 
-export const authorizerMiddleware = <B>(): middy.MiddlewareObj<
-  ValidatedAPIGatewayProxyEvent<B>,
-  APIGatewayProxyResult
+export const authorizerMiddleware = (): middy.MiddlewareObj<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  any,
+  ContextWithToken
 > => {
   return {
-    before: async (handler): Promise<void> => {
+    before: async (handler) => {
       const authorizationHeader = handler.event.headers?.["Authorization"];
 
       if (!authorizationHeader && !authorizationHeader.includes("Bearer ")) {

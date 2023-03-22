@@ -1,6 +1,3 @@
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
-
 import {
   makeResultResponse,
   type ValidatedEventAPIGatewayProxyEvent,
@@ -9,6 +6,7 @@ import { authorizerMiddleware } from "@middlewares/authorizer";
 import { s3 } from "@services/s3";
 
 import schema from "./schema";
+import { middyfy } from "@libs/lambda";
 
 const createPresignedUrl: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
@@ -24,6 +22,4 @@ const createPresignedUrl: ValidatedEventAPIGatewayProxyEvent<
   return makeResultResponse({ url });
 };
 
-export const main = middy(createPresignedUrl)
-  .use(jsonBodyParser())
-  .use(authorizerMiddleware());
+export const main = middyfy(createPresignedUrl).use(authorizerMiddleware());

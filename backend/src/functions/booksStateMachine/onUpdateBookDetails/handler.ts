@@ -1,6 +1,5 @@
 import { makeResultResponse } from "@libs/apiGateway";
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
+import { middyfy } from "@libs/lambda";
 
 import Notion from "src/api/notion";
 import type {
@@ -58,4 +57,4 @@ const onUpdateBookDetails = async (input: UpdateBookDetailsInput) => {
   }
 };
 
-export const main = middy(onUpdateBookDetails).use(jsonBodyParser());
+export const handler = middyfy(onUpdateBookDetails);

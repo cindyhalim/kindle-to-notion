@@ -1,5 +1,3 @@
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
 import type { Context } from "aws-lambda";
 
 import {
@@ -12,6 +10,7 @@ import { RawReadingListProperties } from "src/api/notion/types";
 import schema from "./schema";
 import { authorizerMiddleware } from "@middlewares/authorizer";
 import { getReadListDatabaseIdMiddleware } from "@middlewares/getReadListDatabaseId";
+import { middyfy } from "@libs/lambda";
 
 const exportClippingsToNotion: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
@@ -84,7 +83,6 @@ const exportClippingsToNotion: ValidatedEventAPIGatewayProxyEvent<
   return makeResultResponse({ success: true });
 };
 
-export const handler = middy(exportClippingsToNotion)
-  .use(jsonBodyParser())
+export const handler = middyfy(exportClippingsToNotion)
   .use(authorizerMiddleware())
   .use(getReadListDatabaseIdMiddleware());

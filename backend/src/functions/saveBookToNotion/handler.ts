@@ -1,7 +1,3 @@
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
-import type { Context } from "aws-lambda";
-
 import Notion from "src/api/notion";
 import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
 import type {
@@ -9,19 +5,21 @@ import type {
   RawReadingListProperties,
 } from "src/api/notion/types";
 
-import { authorizerMiddleware } from "@middlewares/authorizer";
+import {
+  authorizerMiddleware,
+  type ContextWithToken,
+} from "@middlewares/authorizer";
 import { validateReadListDatabaseIdMiddleware } from "@middlewares/validateReadListDatabaseId";
 import {
   makeResultResponse,
   type ValidatedEventAPIGatewayProxyEvent,
 } from "@libs/apiGateway";
 import schema from "./schema";
-
-type SaveBookToNotionContext = Context & { accessToken: string };
+import { middyfy } from "@libs/lambda";
 
 const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
-> = async (event, context: SaveBookToNotionContext) => {
+> = async (event, context: ContextWithToken) => {
   const { isbn, title, author, genres, pages, coverUrl, goodreadsUrl } =
     event.body;
   const { accessToken } = context;
@@ -145,7 +143,6 @@ const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
   });
 };
 
-export const main = middy(saveBookToNotion)
-  .use(jsonBodyParser())
+export const main = middyfy(saveBookToNotion)
   .use(authorizerMiddleware())
   .use(validateReadListDatabaseIdMiddleware());

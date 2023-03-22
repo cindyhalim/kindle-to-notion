@@ -1,6 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
 
 import {
   makeResultResponse,
@@ -13,6 +11,7 @@ import { getReadListDatabaseIdMiddleware } from "@middlewares/getReadListDatabas
 import { stepFunctions } from "@services/stepFunctions";
 
 import schema from "./schema";
+import { middyfy } from "@libs/lambda";
 
 const getBookInfo: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event,
@@ -48,7 +47,6 @@ const getBookInfo: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   }
 };
 
-export const main = middy(getBookInfo)
-  .use(jsonBodyParser())
+export const main = middyfy(getBookInfo)
   .use(authorizerMiddleware())
   .use(getReadListDatabaseIdMiddleware());

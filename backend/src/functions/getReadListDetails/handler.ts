@@ -1,15 +1,16 @@
-import middy from "@middy/core";
 import type { Context, APIGatewayProxyEvent } from "aws-lambda";
 
 import { makeResultResponse } from "@libs/apiGateway";
-import { authorizerMiddleware } from "@middlewares/authorizer";
+import {
+  authorizerMiddleware,
+  type ContextWithToken,
+} from "@middlewares/authorizer";
 import Notion from "src/api/notion";
-
-type GetReadListContext = Context & { accessToken: string };
+import { middyfy } from "@libs/lambda";
 
 const getReadListDetails = async (
   _event: APIGatewayProxyEvent,
-  context: GetReadListContext
+  context: ContextWithToken
 ) => {
   const { accessToken } = context;
   const client = new Notion({ accessToken });
@@ -33,4 +34,4 @@ const getReadListDetails = async (
   return makeResultResponse({ pages });
 };
 
-export const main = middy(getReadListDetails).use(authorizerMiddleware());
+export const main = middyfy(getReadListDetails).use(authorizerMiddleware());

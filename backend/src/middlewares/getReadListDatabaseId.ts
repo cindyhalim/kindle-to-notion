@@ -4,7 +4,7 @@ import { createError } from "@middy/util";
 import { APIGatewayProxyResult, Context } from "aws-lambda";
 import Notion from "src/api/notion";
 
-export const getReadListDatabaseIdMiddleware = <B>(): middy.MiddlewareObject<
+export const getReadListDatabaseIdMiddleware = <B>(): middy.MiddlewareObj<
   ValidatedAPIGatewayProxyEvent<B>,
   APIGatewayProxyResult
 > => {

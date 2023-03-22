@@ -1,7 +1,4 @@
-import { Context } from "aws-lambda";
 import { Readable } from "stream";
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
 
 import { RawEmailListProperties } from "src/api/notion/types";
 import Notion from "../../api/notion";
@@ -13,16 +10,17 @@ import {
   type ValidatedEventAPIGatewayProxyEvent,
 } from "@libs/apiGateway";
 import { authorizerMiddleware } from "@middlewares/authorizer";
-import { getEmailsDatabaseIdMiddleware } from "@middlewares/getEmailsDatabaseId";
+import {
+  type ContextWithEmailListId,
+  getEmailsDatabaseIdMiddleware,
+} from "@middlewares/getEmailsDatabaseId";
+import { middyfy } from "@libs/lambda";
 
 import schema from "./schema";
 
 const sendEPubToKindle: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
-> = async (
-  event,
-  context: Context & { accessToken: string; emailListId: string }
-) => {
+> = async (event, context: ContextWithEmailListId) => {
   const { accessToken, emailListId: databaseId } = context;
 
   if (!event.body) {
@@ -69,7 +67,6 @@ const sendEPubToKindle: ValidatedEventAPIGatewayProxyEvent<
   return makeResultResponse({ success: true });
 };
 
-export const main = middy(sendEPubToKindle)
-  .use(jsonBodyParser())
+export const main = middyfy(sendEPubToKindle)
   .use(authorizerMiddleware())
   .use(getEmailsDatabaseIdMiddleware());

@@ -1,21 +1,19 @@
-import { ValidatedAPIGatewayProxyEvent } from "@libs/apiGateway";
 import middy from "@middy/core";
 import { createError } from "@middy/util";
-import { APIGatewayProxyResult, Context } from "aws-lambda";
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import Notion from "src/api/notion";
+import type { ContextWithToken } from "./authorizer";
 
-export const getEmailsDatabaseIdMiddleware = <B>(): middy.MiddlewareObject<
-  ValidatedAPIGatewayProxyEvent<B>,
-  APIGatewayProxyResult
+export type ContextWithEmailListId = ContextWithToken & { emailListId: string };
+
+export const getEmailsDatabaseIdMiddleware = (): middy.MiddlewareObj<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  any,
+  ContextWithEmailListId
 > => {
   return {
-    before: async (
-      handler: middy.HandlerLambda<
-        ValidatedAPIGatewayProxyEvent<B>,
-        APIGatewayProxyResult,
-        Context & { accessToken?: string }
-      >
-    ): Promise<void> => {
+    before: async (handler) => {
       const accessToken = handler.context.accessToken;
 
       if (!accessToken) {

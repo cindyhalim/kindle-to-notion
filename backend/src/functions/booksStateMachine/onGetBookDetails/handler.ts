@@ -1,9 +1,8 @@
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
 import { puppeteer } from "@libs/puppeteer";
 import { s3 } from "src/services/s3";
 
 import type { GetBookDetailsOutput, GetBookInfoInput } from "../types";
+import { middyfy } from "@libs/lambda";
 
 const onGetBookDetails = async (
   input: GetBookInfoInput
@@ -88,4 +87,4 @@ const onGetBookDetails = async (
   }
 };
 
-export const main = middy(onGetBookDetails).use(jsonBodyParser());
+export const main = middyfy(onGetBookDetails);

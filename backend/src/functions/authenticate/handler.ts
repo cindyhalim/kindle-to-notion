@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from "axios";
-import middy from "@middy/core";
-import jsonBodyParser from "@middy/http-json-body-parser";
+
 import { config } from "src/environment";
 import {
   makeResultResponse,
   type ValidatedEventAPIGatewayProxyEvent,
 } from "@libs/apiGateway";
 import schema from "./schema";
+import { middyfy } from "@libs/lambda";
 
 interface INotionAuthBody {
   grant_type: "authorization_code";
@@ -92,4 +92,4 @@ const authenticate: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   }
 };
 
-export const main = middy(authenticate).use(jsonBodyParser());
+export const main = middyfy(authenticate);
