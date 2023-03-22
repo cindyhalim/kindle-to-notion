@@ -1,16 +1,18 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { s3 } from "src/services/s3";
 
 import {
   makeResultResponse,
-  ValidatedAPIGatewayProxyEvent,
-} from "../libs/apiGateway";
+  type ValidatedEventAPIGatewayProxyEvent,
+} from "@libs/apiGateway";
+import { authorizerMiddleware } from "@middlewares/authorizer";
+import { s3 } from "@services/s3";
 
-const controller = async (
-  event: ValidatedAPIGatewayProxyEvent<{ key: string }>
-) => {
+import schema from "./schema";
+
+const createPresignedUrl: ValidatedEventAPIGatewayProxyEvent<
+  typeof schema
+> = async (event) => {
   if (!event.body) {
     throw new Error("Missing event body");
   }
@@ -22,6 +24,6 @@ const controller = async (
   return makeResultResponse({ url });
 };
 
-export const handler = middy(controller)
+export const main = middy(createPresignedUrl)
   .use(jsonBodyParser())
   .use(authorizerMiddleware());

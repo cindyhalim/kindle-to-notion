@@ -1,35 +1,29 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import type { Context } from "aws-lambda";
+
 import Notion from "src/api/notion";
 import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
 import type {
   NotionPropertyData,
   RawReadingListProperties,
 } from "src/api/notion/types";
-import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { validateReadListDatabaseIdMiddleware } from "src/middlewares/validateReadListDatabaseId";
+
+import { authorizerMiddleware } from "@middlewares/authorizer";
+import { validateReadListDatabaseIdMiddleware } from "@middlewares/validateReadListDatabaseId";
 import {
   makeResultResponse,
-  ValidatedAPIGatewayProxyEvent,
-} from "../libs/apiGateway";
-
-type SaveBookToNotionBody = {
-  isbn: string;
-  title: string;
-  author: string;
-  pages: string;
-  genres: string[];
-  coverUrl: string;
-  goodreadsUrl: string;
-};
+  type ValidatedEventAPIGatewayProxyEvent,
+} from "@libs/apiGateway";
+import schema from "./schema";
 
 type SaveBookToNotionContext = Context & { accessToken: string };
 
-const controller = async (
-  event: ValidatedAPIGatewayProxyEvent<SaveBookToNotionBody>,
-  context: SaveBookToNotionContext
-) => {
+const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
+  typeof schema
+> = async (event, context: SaveBookToNotionContext) => {
+  const { isbn, title, author, genres, pages, coverUrl, goodreadsUrl } =
+    event.body;
   const { accessToken } = context;
   const { databaseId } = event.pathParameters;
 
@@ -44,7 +38,7 @@ const controller = async (
           {
             property: READING_LIST_PROPERTIES["isbn"].name,
             rich_text: {
-              equals: event.body.isbn,
+              equals: isbn,
             },
           },
           {
@@ -52,13 +46,13 @@ const controller = async (
               {
                 property: READING_LIST_PROPERTIES["title"].name,
                 rich_text: {
-                  contains: event.body.title,
+                  contains: title,
                 },
               },
               {
                 property: READING_LIST_PROPERTIES["author"].name,
                 rich_text: {
-                  contains: event.body.author,
+                  contains: author,
                 },
               },
             ],
@@ -70,32 +64,32 @@ const controller = async (
   const properties: NotionPropertyData<RawReadingListProperties>[] = [
     {
       name: "title",
-      value: event.body.title,
+      value: title,
     },
-    { name: "author", value: event.body.author },
+    { name: "author", value: author },
 
     {
       name: "genres",
-      value: event.body.genres,
+      value: genres,
     },
     {
       name: "isbn",
-      value: event.body.isbn,
+      value: isbn,
     },
     {
       name: "pages",
-      value: event.body.pages ? Number(event.body.pages) : null,
+      value: pages ? Number(pages) : null,
     },
-    ...(event.body.coverUrl && [
+    ...(coverUrl && [
       {
         name: "book cover" as const,
-        value: event.body.coverUrl,
+        value: coverUrl,
       },
     ]),
-    ...(event.body.goodreadsUrl && [
+    ...(goodreadsUrl && [
       {
         name: "goodreads link" as const,
-        value: event.body.goodreadsUrl,
+        value: goodreadsUrl,
       },
     ]),
   ];
@@ -151,7 +145,7 @@ const controller = async (
   });
 };
 
-export const handler = middy(controller)
+export const main = middy(saveBookToNotion)
   .use(jsonBodyParser())
   .use(authorizerMiddleware())
   .use(validateReadListDatabaseIdMiddleware());

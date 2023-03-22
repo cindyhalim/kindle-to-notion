@@ -1,11 +1,20 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import type {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Handler,
+} from "aws-lambda";
+import type { FromSchema } from "json-schema-to-ts";
 
-export type ValidatedAPIGatewayProxyEvent<B> = Omit<
+export type ValidatedAPIGatewayProxyEvent<S> = Omit<
   APIGatewayProxyEvent,
   "body"
 > & {
-  body: B;
+  body: FromSchema<S>;
 };
+export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<
+  ValidatedAPIGatewayProxyEvent<S>,
+  APIGatewayProxyResult
+>;
 
 type StatusCode = 200 | 400 | 403 | 401;
 

@@ -2,14 +2,14 @@ import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { puppeteer } from "@libs/puppeteer";
 import { s3 } from "src/services/s3";
-import { IGetBookInfoPayload, IGetBookLinkOutput } from "src/types/functions";
+import { GetBookInfoInput, GetBookLinkOutput } from "../types";
 
-const controller = async ({
+const onGetBookLink = async ({
   title,
   author,
   executionName,
   isMissingLink,
-}: IGetBookInfoPayload): Promise<IGetBookLinkOutput> => {
+}: GetBookInfoInput): Promise<GetBookLinkOutput> => {
   if (!isMissingLink) {
     return { status: "ReturnEarly: returning early as book already has link" };
   }
@@ -56,4 +56,4 @@ const controller = async ({
   }
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const handler = middy(onGetBookLink).use(jsonBodyParser());

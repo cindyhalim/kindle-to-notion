@@ -1,30 +1,21 @@
-import * as StepFunctions from "aws-sdk/clients/stepfunctions";
 import { v4 as uuidv4 } from "uuid";
-
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
+
 import {
   makeResultResponse,
-  ValidatedAPIGatewayProxyEvent,
-} from "../libs/apiGateway";
-import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getReadListDatabaseIdMiddleware } from "src/middlewares/getReadListDatabaseId";
-import { Context } from "aws-lambda";
+  type ValidatedEventAPIGatewayProxyEvent,
+} from "@libs/apiGateway";
+import type { Context } from "aws-lambda";
 
-const stepFunctions = new StepFunctions();
+import { authorizerMiddleware } from "@middlewares/authorizer";
+import { getReadListDatabaseIdMiddleware } from "@middlewares/getReadListDatabaseId";
+import { stepFunctions } from "@services/stepFunctions";
 
-type AddBookInfoEventBody = {
-  books: {
-    isbn: string;
-    author: string;
-    pageId: string;
-    title: string;
-    isMissingDetails: boolean;
-    isMissingLink: boolean;
-  }[];
-};
-const controller = async (
-  event: ValidatedAPIGatewayProxyEvent<AddBookInfoEventBody>,
+import schema from "./schema";
+
+const getBookInfo: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
+  event,
   context: Context & { accessToken: string; readListId: string }
 ) => {
   const { books } = event.body;
@@ -57,7 +48,7 @@ const controller = async (
   }
 };
 
-export const handler = middy(controller)
+export const main = middy(getBookInfo)
   .use(jsonBodyParser())
   .use(authorizerMiddleware())
   .use(getReadListDatabaseIdMiddleware());

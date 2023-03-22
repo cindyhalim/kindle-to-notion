@@ -1,22 +1,21 @@
+import { makeResultResponse } from "@libs/apiGateway";
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
+
 import Notion from "src/api/notion";
 import type {
   NotionPropertyData,
   RawReadingListProperties,
 } from "src/api/notion/types";
-import type {
-  IGetBookDetailsOutput,
-  IGetBookInfoPayload,
-} from "src/types/functions";
-import { makeResultResponse } from "../libs/apiGateway";
 
-interface IUpdateBookDetailsEvent extends IGetBookInfoPayload {
-  details: IGetBookDetailsOutput;
-}
+import type { GetBookDetailsOutput, GetBookInfoInput } from "../types";
 
-const controller = async (event: IUpdateBookDetailsEvent) => {
-  const { pageId, details, token } = event;
+type UpdateBookDetailsInput = GetBookInfoInput & {
+  details: GetBookDetailsOutput;
+};
+
+const onUpdateBookDetails = async (input: UpdateBookDetailsInput) => {
+  const { pageId, details, token } = input;
 
   try {
     const properties: NotionPropertyData<RawReadingListProperties>[] = [
@@ -59,4 +58,4 @@ const controller = async (event: IUpdateBookDetailsEvent) => {
   }
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const main = middy(onUpdateBookDetails).use(jsonBodyParser());

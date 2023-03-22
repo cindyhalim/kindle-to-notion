@@ -1,14 +1,15 @@
+import { makeResultResponse } from "@libs/apiGateway";
+import { authorizerMiddleware } from "@middlewares/authorizer";
+import { getReadListDatabaseIdMiddleware } from "@middlewares/getReadListDatabaseId";
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { APIGatewayEvent, Context } from "aws-lambda";
+import type { APIGatewayEvent, Context } from "aws-lambda";
 import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
 import { RawReadingListProperties } from "src/api/notion/types";
-import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getReadListDatabaseIdMiddleware } from "src/middlewares/getReadListDatabaseId";
-import Notion from "../api/notion";
-import { makeResultResponse } from "../libs/apiGateway";
 
-const controller = async (
+import Notion from "../../api/notion";
+
+const getBooksWithMissingInfo = async (
   _event: APIGatewayEvent,
   context: Context & { accessToken: string; readListId: string }
 ) => {
@@ -66,7 +67,7 @@ const controller = async (
   }
 };
 
-export const handler = middy(controller)
+export const main = middy(getBooksWithMissingInfo)
   .use(jsonBodyParser())
   .use(authorizerMiddleware())
   .use(getReadListDatabaseIdMiddleware());

@@ -1,4 +1,4 @@
-export interface IGetBookInfoPayload {
+export type GetBookInfoInput = {
   executionName: string;
   databaseId: string;
   pageId: string;
@@ -8,16 +8,16 @@ export interface IGetBookInfoPayload {
   isMissingLink: boolean;
   isMissingDetails: boolean;
   token: string;
-}
+};
 
-export interface IGetBookDetailsOutput {
+export type GetBookDetailsOutput = {
   pages?: string;
   genres?: string[];
   coverUrl?: string;
   status?: string;
-}
+};
 
-export interface IGetBookLinkOutput {
+export type GetBookLinkOutput = {
   status?: string;
   ePub?: string | null;
-}
+};

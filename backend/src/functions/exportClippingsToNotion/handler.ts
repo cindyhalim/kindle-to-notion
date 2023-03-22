@@ -1,26 +1,22 @@
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { Context } from "aws-lambda";
-import Notion from "src/api/notion";
-import { READING_LIST_PROPERTIES } from "src/api/notion/constants";
-import { RawReadingListProperties } from "src/api/notion/types";
-import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getReadListDatabaseIdMiddleware } from "src/middlewares/getReadListDatabaseId";
+import type { Context } from "aws-lambda";
+
 import {
   makeResultResponse,
-  ValidatedAPIGatewayProxyEvent,
-} from "../libs/apiGateway";
+  type ValidatedEventAPIGatewayProxyEvent,
+} from "@libs/apiGateway";
+import Notion from "src/api/notion";
+import { RawReadingListProperties } from "src/api/notion/types";
 
-export interface IClippingsPayload {
-  title: string;
-  author: string;
-  clippings: { quote: string; info: string }[];
-}
+import schema from "./schema";
+import { authorizerMiddleware } from "@middlewares/authorizer";
+import { getReadListDatabaseIdMiddleware } from "@middlewares/getReadListDatabaseId";
 
-const controller = async (
-  event: ValidatedAPIGatewayProxyEvent<{
-    payload: IClippingsPayload[];
-  }>,
+const exportClippingsToNotion: ValidatedEventAPIGatewayProxyEvent<
+  typeof schema
+> = async (
+  event,
   context: Context & { accessToken: string; readListId: string }
 ) => {
   const { payload } = event.body;
@@ -88,7 +84,7 @@ const controller = async (
   return makeResultResponse({ success: true });
 };
 
-export const handler = middy(controller)
+export const handler = middy(exportClippingsToNotion)
   .use(jsonBodyParser())
   .use(authorizerMiddleware())
   .use(getReadListDatabaseIdMiddleware());

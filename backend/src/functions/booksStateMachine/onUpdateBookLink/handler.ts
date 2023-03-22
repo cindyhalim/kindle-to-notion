@@ -5,18 +5,14 @@ import type {
   NotionPropertyData,
   RawReadingListProperties,
 } from "src/api/notion/types";
-import type {
-  IGetBookInfoPayload,
-  IGetBookLinkOutput,
-} from "src/types/functions";
-import { makeResultResponse } from "../libs/apiGateway";
+import { makeResultResponse } from "@libs/apiGateway";
 
-interface IUpdateBookLinkEvent extends IGetBookInfoPayload {
-  url: IGetBookLinkOutput;
-}
+import type { GetBookInfoInput, GetBookLinkOutput } from "../types";
 
-const controller = async (event: IUpdateBookLinkEvent) => {
-  const { pageId, url, token } = event;
+type UpdateBookLinkInput = GetBookInfoInput & { url: GetBookLinkOutput };
+
+const controller = async (input: UpdateBookLinkInput) => {
+  const { pageId, url, token } = input;
 
   try {
     const properties: NotionPropertyData<RawReadingListProperties>[] = [

@@ -2,14 +2,12 @@ import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import { puppeteer } from "@libs/puppeteer";
 import { s3 } from "src/services/s3";
-import {
-  IGetBookDetailsOutput,
-  IGetBookInfoPayload,
-} from "src/types/functions";
 
-const controller = async (
-  input: IGetBookInfoPayload
-): Promise<IGetBookDetailsOutput> => {
+import type { GetBookDetailsOutput, GetBookInfoInput } from "../types";
+
+const onGetBookDetails = async (
+  input: GetBookInfoInput
+): Promise<GetBookDetailsOutput> => {
   const { title, executionName, isbn, isMissingDetails } = input;
 
   if (!isMissingDetails) {
@@ -90,4 +88,4 @@ const controller = async (
   }
 };
 
-export const handler = middy(controller).use(jsonBodyParser());
+export const main = middy(onGetBookDetails).use(jsonBodyParser());

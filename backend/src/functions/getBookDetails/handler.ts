@@ -1,6 +1,6 @@
-import { makeResultResponse } from "../libs/apiGateway";
+import { makeResultResponse } from "../../libs/apiGateway";
 import type { APIGatewayProxyEvent } from "aws-lambda";
-import getBookDetails from "./utils/getBookDetails";
+import getBookDetails from "../utils/getBookDetails";
 
 const isbn13RegExp = new RegExp(/\d{13}/);
 
@@ -41,7 +41,7 @@ function validateISBN13(possibleISBN13: string) {
   return Number(checkDigit) === correctCheckDigit;
 }
 
-export const handler = async (event: APIGatewayProxyEvent) => {
+export const main = async (event: APIGatewayProxyEvent) => {
   const { isbn } = event.queryStringParameters;
 
   if (!validateISBN13(isbn)) {

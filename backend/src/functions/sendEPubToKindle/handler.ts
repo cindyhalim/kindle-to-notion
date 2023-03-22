@@ -2,20 +2,25 @@ import { Context } from "aws-lambda";
 import { Readable } from "stream";
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
+
 import { RawEmailListProperties } from "src/api/notion/types";
-import { s3 } from "src/services/s3";
-import Notion from "../api/notion";
+import Notion from "../../api/notion";
+
+import { mailer } from "@libs/mailer";
+import { s3 } from "@services/s3";
 import {
   makeResultResponse,
-  ValidatedAPIGatewayProxyEvent,
-} from "../libs/apiGateway";
-import { mailer } from "@libs/mailer";
-import { authorizerMiddleware } from "src/middlewares/authorizer";
-import { getEmailsDatabaseIdMiddleware } from "src/middlewares/getEmailsDatabaseId";
-const controller = async (
-  event: ValidatedAPIGatewayProxyEvent<{
-    uploadKey: string;
-  }>,
+  type ValidatedEventAPIGatewayProxyEvent,
+} from "@libs/apiGateway";
+import { authorizerMiddleware } from "@middlewares/authorizer";
+import { getEmailsDatabaseIdMiddleware } from "@middlewares/getEmailsDatabaseId";
+
+import schema from "./schema";
+
+const sendEPubToKindle: ValidatedEventAPIGatewayProxyEvent<
+  typeof schema
+> = async (
+  event,
   context: Context & { accessToken: string; emailListId: string }
 ) => {
   const { accessToken, emailListId: databaseId } = context;
@@ -64,7 +69,7 @@ const controller = async (
   return makeResultResponse({ success: true });
 };
 
-export const handler = middy(controller)
+export const main = middy(sendEPubToKindle)
   .use(jsonBodyParser())
   .use(authorizerMiddleware())
   .use(getEmailsDatabaseIdMiddleware());
