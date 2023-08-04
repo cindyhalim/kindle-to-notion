@@ -1,16 +1,11 @@
 import { kindleNotionBucket } from "src/resources/s3";
-import { booksStateMachine } from "src/resources/step-functions";
-import { Serverless } from "src/types/serverless";
+import type { Serverless } from "src/types/serverless";
 import { handlerFunctions } from "./src/functions";
 
 const serverlessConfiguration: Serverless = {
   service: "kindle-to-notion",
   frameworkVersion: "3",
-  plugins: [
-    "serverless-esbuild",
-    "serverless-step-functions",
-    "serverless-iam-roles-per-function",
-  ],
+  plugins: ["serverless-esbuild", "serverless-iam-roles-per-function"],
   provider: {
     name: "aws",
     runtime: "nodejs14.x",
@@ -56,20 +51,9 @@ const serverlessConfiguration: Serverless = {
     lambdaHashingVersion: "20201221",
   },
   functions: { ...handlerFunctions },
-  stepFunctions: {
-    stateMachines: { ...booksStateMachine },
-  },
   resources: {
     Resources: {
       ...kindleNotionBucket,
-    },
-    Outputs: {
-      BooksStateMachine: {
-        Description: "The ARN of the state machine",
-        Value: {
-          Ref: "BooksStateMachine",
-        },
-      },
     },
   },
 };
