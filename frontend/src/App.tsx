@@ -7,7 +7,6 @@ import { TermsAndConditions } from "./pages/terms-and-conditions";
 import { PrivacyPolicy } from "./pages/privacy-policy";
 import { AuthRedirect, SuccessRedirect } from "./pages/redirect";
 import { ProtectedRoute } from "./core/router/components/protected-route";
-import { GetBooksInfo } from "./pages/prettify";
 import { EPubToKindle } from "./pages/epub-to-kindle";
 import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
 import { RoutesEnum } from "./core/router/routes";
@@ -22,7 +21,6 @@ export const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route element={<ProtectedRoute />}>
-            <Route path={RoutesEnum.PRETTIFY} element={<GetBooksInfo />} />
             <Route
               path={RoutesEnum.EPUB_TO_KINDLE}
               element={<EPubToKindle />}

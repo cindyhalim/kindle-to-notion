@@ -19,15 +19,6 @@ export const authenticate = async ({ code }: { code: string }) => {
   return response.data;
 };
 
-export const updateBooks = async (payload: UpdateBooksPayload) => {
-  const response: AxiosResponse<RawGetBooksResponse> = await axios.post(
-    `${baseUrl}/read-list`,
-    payload
-  );
-
-  return response.data;
-};
-
 export const exportClippingsToNotion = async (
   payload: IFormattedClipping[]
 ) => {

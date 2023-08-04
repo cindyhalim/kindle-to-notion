@@ -1,6 +1,5 @@
 export enum RoutesEnum {
   HOME = "/",
-  PRETTIFY = "/prettify",
   EPUB_TO_KINDLE = "/epub-to-kindle",
   CLIPPINGS_TO_NOTION = "/clippings-to-notion",
   HOW_TO = "/how-to",

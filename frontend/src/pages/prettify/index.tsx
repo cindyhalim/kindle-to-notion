@@ -7,11 +7,7 @@ import { DetailsIcon, LinkIcon } from "../../components/icons";
 import { ListCard } from "../../components/list-card";
 import { ScrollingContentWrapper } from "../../components/scrolling-content-wrapper";
 import { Success } from "../../components/success";
-import {
-  getBooks,
-  RawGetBooksResponse,
-  updateBooks,
-} from "../../core/react-query";
+import { getBooks, RawGetBooksResponse } from "../../core/react-query";
 import { BaseLayout } from "../../layout/base-layout";
 import { theme } from "../../layout/theme";
 import { Legend } from "./legend";
@@ -20,6 +16,7 @@ type SelectedData = {
   [key: string]: RawGetBooksResponse["data"][0] & { selected: boolean };
 };
 
+//TODO: repurpose this to fetch latest url
 export const GetBooksInfo: React.FC = () => {
   const [selectedData, setSelectedData] = useState<SelectedData | null>(null);
   const [showErrorToast, setShowErrorToast] = useState<boolean>(false);
@@ -36,7 +33,8 @@ export const GetBooksInfo: React.FC = () => {
     mutate,
     isLoading: isUpdatingBooks,
     isSuccess,
-  } = useMutation("updateBooks", updateBooks, {
+  } = useMutation({
+    mutationFn: async () => {},
     onError: () => setShowErrorToast(true),
   });
 
