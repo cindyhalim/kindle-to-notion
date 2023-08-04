@@ -20,8 +20,16 @@ import { middyfy } from "@libs/lambda";
 const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event, context: ContextWithToken) => {
-  const { isbn, title, author, genres, pages, coverUrl, goodreadsUrl } =
-    event.body;
+  const {
+    isbn,
+    title,
+    author,
+    genres,
+    pages,
+    coverUrl,
+    goodreadsUrl,
+    ePubUrl,
+  } = event.body;
   const { accessToken } = context;
   const { databaseId } = event.pathParameters;
 
@@ -88,6 +96,12 @@ const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
       {
         name: "goodreads link" as const,
         value: goodreadsUrl,
+      },
+    ]),
+    ...(ePubUrl && [
+      {
+        name: "epub link" as const,
+        value: ePubUrl,
       },
     ]),
   ];

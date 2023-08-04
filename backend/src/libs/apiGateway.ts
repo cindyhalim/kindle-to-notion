@@ -19,8 +19,8 @@ export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<
 
 type StatusCode = 200 | 400 | 403 | 401;
 
-export const makeResultResponse = (
-  response: any,
+export const makeResultResponse = <T>(
+  response: T,
   statusCode: StatusCode = 200
 ): APIGatewayProxyResult => {
   return {
