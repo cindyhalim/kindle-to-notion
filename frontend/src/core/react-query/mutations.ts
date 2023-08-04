@@ -1,11 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { config } from "../../environment";
 import { IFormattedClipping } from "../../utils";
-import {
-  RawGetBooksResponse,
-  RawCreateUploadUrlResponse,
-  UpdateBooksPayload,
-} from "./types";
+import { RawCreateUploadUrlResponse } from "./types";
 
 const baseUrl = config.serviceUrl;
 

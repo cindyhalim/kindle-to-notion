@@ -12,11 +12,3 @@ export type RawGetBooksResponse = {
 export type RawCreateUploadUrlResponse = {
   url: string;
 };
-export type UpdateBooksPayload = {
-  books: {
-    author: string;
-    pageId: string;
-    title: string;
-    isbn: string;
-  }[];
-};
