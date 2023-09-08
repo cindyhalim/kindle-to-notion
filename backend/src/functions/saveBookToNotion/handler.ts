@@ -73,7 +73,6 @@ const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
       value: title,
     },
     { name: "author", value: author },
-
     {
       name: "genres",
       value: genres,
@@ -86,25 +85,28 @@ const saveBookToNotion: ValidatedEventAPIGatewayProxyEvent<
       name: "pages",
       value: pages ? Number(pages) : null,
     },
-    ...(coverUrl && [
-      {
-        name: "book cover" as const,
-        value: coverUrl,
-      },
-    ]),
-    ...(goodreadsUrl && [
-      {
-        name: "goodreads link" as const,
-        value: goodreadsUrl,
-      },
-    ]),
-    ...(ePubUrl && [
-      {
-        name: "epub link" as const,
-        value: ePubUrl,
-      },
-    ]),
   ];
+
+  if (coverUrl) {
+    properties.push({
+      name: "book cover" as const,
+      value: coverUrl,
+    });
+  }
+
+  if (goodreadsUrl) {
+    properties.push({
+      name: "goodreads link" as const,
+      value: goodreadsUrl,
+    });
+  }
+
+  if (ePubUrl) {
+    properties.push({
+      name: "epub link" as const,
+      value: ePubUrl,
+    });
+  }
 
   if (!existingBookEntries.length) {
     console.log("No existing book found... creating new page");
