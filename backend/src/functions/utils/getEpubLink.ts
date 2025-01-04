@@ -1,56 +1,58 @@
-import * as cheerio from "cheerio";
-import fetch from "node-fetch";
+import fetch from 'node-fetch'
+import { config } from 'src/environment'
 
+const PRIORITY_DISPLAY_LINKS = [
+  'vk.com',
+  'vdoc.pub',
+  'z-epub.com',
+  'www.5epub.com',
+]
+
+type SearchResponse = {
+  items: {
+    link: string
+    displayLink: string
+  }[]
+}
 export default async function getEpubLink({
   title,
   author,
 }: {
-  title: string;
-  author: string;
+  title: string
+  author: string
 }): Promise<string | null> {
   if (!title || !author) {
-    throw new Error("Missing arguments");
+    throw new Error('Missing arguments')
   }
 
-  const searchInputText = `${title} ${author} 'epub' free`.toLowerCase();
-  const urlParams = new URLSearchParams(searchInputText);
-  const searchUrl = `https://www.google.com/search?q=${urlParams.toString()}&sourceid=chrome&ie=UTF-8`;
-  let content = null;
-
-  console.log("Retrieving epub link search results for:", title);
+  const searchInputText = `${title} ${author} "epub" free`.toLowerCase()
+  const queryParam = encodeURIComponent(searchInputText)
+  const apiKey = config.googleSearch.apiKey
+  const customSearchEngineId = config.googleSearch.customSearchEngineId
+  const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${customSearchEngineId}&q=${queryParam}`
 
   try {
-    content = await fetch(searchUrl).then((response) => response.text());
-  } catch {
-    throw Error("Error retrieving epub link");
+    const response = await fetch(searchUrl)
+    const searchResponse = (await response.json()) as SearchResponse
+
+    return sortSearchResults(searchResponse.items, PRIORITY_DISPLAY_LINKS).map(
+      (item) => item.link
+    )[0]
+  } catch (e) {
+    throw Error('Error retrieving epub link', e)
   }
-
-  const $ = cheerio.load(content);
-
-  const possibleEpubLinks: string[] = [];
-
-  $("div#main a").each((_, el) => {
-    const href = $(el).attr("href");
-    const urlPrefix = "/url?q=";
-
-    if (href.startsWith(urlPrefix) && !href.includes("google.com")) {
-      const link = href.replace(urlPrefix, "").split("&sa=")[0];
-      possibleEpubLinks.push(link);
-    }
-  });
-
-  const epubLinks = await Promise.all(
-    possibleEpubLinks.filter(async (link) => await isValidLink(link))
-  );
-
-  return epubLinks?.[0] || null;
 }
 
-async function isValidLink(link: string): Promise<boolean> {
-  try {
-    const response = await fetch(link);
-    return response.ok;
-  } catch {
-    return false;
-  }
+function sortSearchResults(
+  searchResults: SearchResponse['items'],
+  orderedDisplayLinks: string[]
+) {
+  const orderMap = new Map<string, number>()
+  orderedDisplayLinks.forEach((link, idx) => orderMap.set(link, idx))
+
+  return searchResults.sort((a, b) => {
+    const aRank = orderMap.get(a.displayLink) ?? Infinity // Use Infinity for missing values
+    const bRank = orderMap.get(b.displayLink) ?? Infinity // Use Infinity for missing values
+    return aRank - bRank
+  })
 }
