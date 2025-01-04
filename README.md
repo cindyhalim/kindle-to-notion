@@ -19,7 +19,6 @@ try it out **[here](https://notion-kindle.netlify.app/)**
 
 ### features:
 
-- prettify your reading list: get book info such as genre and number of pages as well as open source epub download link.
 - epub to kindle: upload your downloaded epub and send them directly to your kindle, courtesy of amazon's [send to kindle by email feature](https://www.amazon.com/sendtokindle/email).
 - clippings to notion: upload your kindle notes/highlights to your notion reading list.
 

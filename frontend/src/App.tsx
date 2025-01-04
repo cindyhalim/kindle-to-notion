@@ -1,19 +1,19 @@
-import React from "react";
-import { Home } from "./pages/home";
+import React from 'react'
+import { Home } from './pages/home'
 
-import { QueryClient, QueryClientProvider } from "react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { TermsAndConditions } from "./pages/terms-and-conditions";
-import { PrivacyPolicy } from "./pages/privacy-policy";
-import { AuthRedirect, SuccessRedirect } from "./pages/redirect";
-import { ProtectedRoute } from "./core/router/components/protected-route";
-import { EPubToKindle } from "./pages/epub-to-kindle";
-import { UploadClippingsToNotion } from "./pages/clippings-to-notion";
-import { RoutesEnum } from "./core/router/routes";
-import { Menu } from "./pages/menu";
-import { HowTo } from "./pages/how-to";
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { TermsAndConditions } from './pages/terms-and-conditions'
+import { PrivacyPolicy } from './pages/privacy-policy'
+import { AuthRedirect, SuccessRedirect } from './pages/redirect'
+import { ProtectedRoute } from './core/router/components/protected-route'
+import { EPubToKindle } from './pages/epub-to-kindle'
+import { UploadClippingsToNotion } from './pages/clippings-to-notion'
+import { RoutesEnum } from './core/router/routes'
+import { Menu } from './pages/menu'
+import { HowTo } from './pages/how-to'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 export const App: React.FC = () => {
   return (
@@ -40,5 +40,5 @@ export const App: React.FC = () => {
         <Menu />
       </BrowserRouter>
     </QueryClientProvider>
-  );
-};
+  )
+}
